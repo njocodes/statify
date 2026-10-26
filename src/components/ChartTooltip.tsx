@@ -22,7 +22,7 @@ export function ChartTooltip({ active, payload, label, sort = "desc", rank, unit
   const rows = payload.filter((p) => p.value !== null && p.value !== undefined && p.name !== undefined);
   if (sort !== "none") rows.sort((a, b) => (sort === "asc" ? Number(a.value) - Number(b.value) : Number(b.value) - Number(a.value)));
   const sum = rows.reduce((a, p) => a + Number(p.value), 0);
-  const fmt = (v: number) => (rank ? `#${v}` : `${Math.round(v * 10) / 10}${unit}`);
+  const fmt = (v: number) => (rank ? `#${v}` : `${(Math.round(v * 10) / 10).toLocaleString(settings.lang)}${unit}`);
   return (
     <div className="max-w-[16rem] rounded-xl border border-line bg-surface px-3 py-2 text-xs text-fg shadow-xl">
       <div className="mb-1 font-semibold">{head}</div>

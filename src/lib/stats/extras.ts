@@ -244,6 +244,9 @@ export interface PeriodSummary {
   matchedMs: number;
 }
 
+/** one summary per period, in the given order */
+export const periods = (all: Play[], f: Filter, list: Period[]): PeriodSummary[] => list.map((per) => summarize(all, f, per));
+
 function summarize(all: Play[], f: Filter, per: Period): PeriodSummary {
   const g: Filter = { ...f, from: per.from, to: per.to };
   const list = tracksOf(all).filter((p) => (g.from === null || p.start >= g.from) && (g.to === null || p.start < g.to));

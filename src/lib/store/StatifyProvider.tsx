@@ -48,6 +48,7 @@ interface Ctx {
   search: (q: string) => Promise<SearchHit[]>;
   onThisDay: (md: string) => Promise<DayYear[]>;
   compare: (a: Period, b: Period) => Promise<[PeriodSummary, PeriodSummary]>;
+  periods: (list: Period[]) => Promise<PeriodSummary[]>;
   view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones" | "habits", f: Pick<Filter, "from" | "to">) => Promise<T>;
 }
 
@@ -261,6 +262,10 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
       compare: async (a, b) => {
         const r = await call<Extract<Res, { type: "compare" }>>({ type: "compare", a, b, filter: baseFilter });
+        return r.data;
+      },
+      periods: async (list) => {
+        const r = await call<Extract<Res, { type: "periods" }>>({ type: "periods", list, filter: baseFilter });
         return r.data;
       },
       search: async (q) => {

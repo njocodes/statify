@@ -5,7 +5,7 @@ import { appendPlays, clearAll, loadGenreCache, loadPlays, putGenre } from "../s
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
 import { trends, type TrendsData } from "../stats/trends";
-import { compare, genreStats, habits, type HabitsData, milestones, onThisDay, phases, type DayYear, type GenreStats, type Milestone, type Period, type Phase, type PeriodSummary } from "../stats/extras";
+import { compare, periods, genreStats, habits, type HabitsData, milestones, onThisDay, phases, type DayYear, type GenreStats, type Milestone, type Period, type Phase, type PeriodSummary } from "../stats/extras";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
 import { genreFromTags, genreOf, normalize, setExtraGenre, type GenreMix } from "../theme/genres";
 import { isGenre } from "../theme/themes";
@@ -26,7 +26,8 @@ export type Req =
   | { id: number; type: "lookupCancel" }
   | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones" | "habits"; filter: Filter }
   | { id: number; type: "onThisDay"; filter: Filter; md: string }
-  | { id: number; type: "compare"; filter: Filter; a: Period; b: Period };
+  | { id: number; type: "compare"; filter: Filter; a: Period; b: Period }
+  | { id: number; type: "periods"; filter: Filter; list: Period[] };
 
 export type Res =
   | { id: number; ok: true; type: "load"; extent: Extent }
@@ -50,6 +51,7 @@ export type Res =
   | { id: number; ok: true; type: "view"; data: ViewData }
   | { id: number; ok: true; type: "onThisDay"; days: DayYear[] }
   | { id: number; ok: true; type: "compare"; data: [PeriodSummary, PeriodSummary] }
+  | { id: number; ok: true; type: "periods"; data: PeriodSummary[] }
   | { id: number; ok: false; error: string }
   | { id: -1; progress: { done: number; total: number } };
 
@@ -148,6 +150,10 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       }
       case "onThisDay": {
         post({ id: r.id, ok: true, type: "onThisDay", days: onThisDay(plays, r.filter, r.md) });
+        break;
+      }
+      case "periods": {
+        post({ id: r.id, ok: true, type: "periods", data: periods(plays, r.filter, r.list) });
         break;
       }
       case "compare": {
