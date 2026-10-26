@@ -5,7 +5,7 @@ export type ThemeSetting = "auto" | ThemeId;
 export const GENRES = ["rap", "pop", "rnb", "rock", "metal", "indie", "folk", "electronic", "techno", "hoerspiel", "jazz", "klassik", "country", "ambient", "reggae", "latin"] as const;
 export type Genre = (typeof GENRES)[number];
 
-/** Which drawn style a dominant genre gets in "auto" mode. */
+/** Which genre style a dominant genre gets in "auto" mode. */
 /** accent colour of each genre, used as the second colour next to the theme accent */
 export const GENRE_COLOR: Record<Genre, string> = {
   rap: "#ff3d9a", pop: "#ff7a1a", rnb: "#a855f7", rock: "#e11d2e", metal: "#8e1013", indie: "#14b8a6", folk: "#84cc16",
