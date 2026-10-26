@@ -49,8 +49,15 @@ export function Nav() {
   const [pill, setPill] = useState<{ x: number; w: number } | null>(null);
   const activeHref = all.find((i) => i.href === path)?.href;
   useLayoutEffect(() => {
-    const el = rail.current?.querySelector<HTMLElement>(`[data-href="${activeHref}"]`);
-    setPill(el ? { x: el.offsetLeft, w: el.offsetWidth } : null);
+    const measure = () => {
+      const el = rail.current?.querySelector<HTMLElement>(`[data-href="${activeHref}"]`);
+      setPill(el ? { x: el.offsetLeft, w: el.offsetWidth } : null);
+    };
+    measure();
+    // fonts and window size change the link widths after the first measurement
+    document.fonts?.ready.then(measure);
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
   }, [activeHref, settings.lang, hasData]);
 
   const slots = tabs.length + (more.length ? 1 : 0);
@@ -65,7 +72,7 @@ export function Nav() {
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
           <Link href={hasData ? "/dashboard/" : "/"} className="shrink-0" aria-label="Statify"><Logo /></Link>
           <nav ref={rail} className="relative hidden rounded-full border border-line bg-surface2 p-1 sm:flex">
-            {pill && <span aria-hidden className={`absolute bottom-1 top-1 rounded-full bg-accent shadow-sm ${slide}`} style={{ width: pill.w, transform: `translateX(${pill.x}px)` }} />}
+            {pill && <span aria-hidden className={`absolute bottom-1 left-0 top-1 rounded-full bg-accent shadow-sm ${slide}`} style={{ width: pill.w, transform: `translateX(${pill.x}px)` }} />}
             {all.map((i) => (
               <Link
                 key={i.href}
