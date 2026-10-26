@@ -3,6 +3,8 @@ import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand,
 import "./globals.css";
 import { StatifyProvider } from "@/lib/store/StatifyProvider";
 import { RegisterSW } from "@/components/RegisterSW";
+import { ErrorBanner } from "@/components/ErrorBanner";
+import { Footer } from "@/components/Footer";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { Nav } from "@/components/Nav";
 import { SvgDefs } from "@/components/SvgDefs";
@@ -52,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PullToRefresh />
         <StatifyProvider>
           <Nav />
-          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 outline-none sm:pb-24">{children}</main>
+          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 outline-none sm:pb-24">{children}<Footer /></main>
+          <ErrorBanner />
         </StatifyProvider>
       </body>
     </html>

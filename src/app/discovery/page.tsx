@@ -10,6 +10,7 @@ import { TopList } from "@/components/TopList";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { fmtDate, fmtInt } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 export default function Discovery() {
   const { t, settings } = useStatify();
@@ -20,7 +21,7 @@ export default function Discovery() {
     <div className="space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <>
           <section className="card space-y-3 p-4">

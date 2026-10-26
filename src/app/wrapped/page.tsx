@@ -12,6 +12,7 @@ import { DAYS_PER_MONTH, fmtDec, fmtInt, hours } from "@/lib/format";
 import { dominantGenre, hatOf, moodOf, type GenreMix } from "@/lib/theme/genres";
 import { GENRE_THEME, type ThemeId } from "@/lib/theme/themes";
 import type { TopItem } from "@/lib/stats/core";
+import { Skeleton } from "@/components/Skeleton";
 
 /** counts up from 0 once the slide appears */
 function useCountUp(target: number, ms = 1300) {
@@ -282,7 +283,7 @@ export default function Wrapped() {
   return (
     <div data-no-ptr data-theme={style} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90" style={{ ...toneVars, fontFamily: "var(--font-body)" }}>
       {!data || !cur ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <div
           ref={shot}

@@ -8,6 +8,7 @@ import { WeekHeatmap } from "@/components/WeekHeatmap";
 import { CalendarHeatmap } from "@/components/CalendarHeatmap";
 import { MonthChart } from "@/components/MonthChart";
 import { fmtDate, fmtDuration, fmtInt } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 export default function Patterns() {
   const { t, settings } = useStatify();
@@ -20,7 +21,7 @@ export default function Patterns() {
     <div className="space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <>
           <section className="card space-y-3 p-4">

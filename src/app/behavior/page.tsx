@@ -10,6 +10,7 @@ import { fmtInt } from "@/lib/format";
 import { Cover } from "@/components/Cover";
 import Link from "next/link";
 import type { HabitItem, HabitsData } from "@/lib/stats/extras";
+import { Skeleton } from "@/components/Skeleton";
 
 function HabitList({ title, items, kind, entity }: { title: string; items: HabitItem[]; kind: "skip" | "times" | "runs"; entity: "track" | "artist" | "album" }) {
   const { t, settings } = useStatify();
@@ -69,7 +70,7 @@ export default function Behavior() {
     <div className="space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">

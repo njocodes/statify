@@ -41,7 +41,6 @@ export default function Home() {
         </ol>
         <p className="border-t border-line pt-3 text-sm text-muted">{t("howNote")}</p>
       </section>
-      <p className="text-xs text-muted">{t("disclaimer")}</p>
     </div>
   );
 }

@@ -43,6 +43,10 @@ interface Ctx {
   /** opt-in: asks MusicBrainz about the most-played artists the built-in lists do not know */
   lookupGenres: (limit: number, onProgress?: (done: number, total: number) => void) => Promise<{ found: number; checked: number; cancelled: boolean }>;
   cancelLookup: () => void;
+  /** everything stored locally as one gzipped file */
+  exportBackup: () => Promise<{ blob: Blob; count: number }>;
+  /** set when the worker crashed or never answered; the UI offers a reload */
+  fatal: string | null;
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
   detail: (entity: EntityType, key: string) => Promise<Detail | null>;
   search: (q: string) => Promise<SearchHit[]>;
@@ -75,6 +79,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   const [coverColor, setCoverColorState] = useState<Rgb | null>(null);
   const [genreMix, setGenreMix] = useState<GenreMix | null>(null);
   const [genreRev, setGenreRev] = useState(0);
+  const [fatal, setFatal] = useState<string | null>(null);
 
   const call = useCallback(<T extends Res>(req: DistributiveOmit<Req, "id">): Promise<T> => {
     return new Promise((resolve, reject) => {
@@ -114,10 +119,26 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       if (m.ok) p.resolve(m);
       else p.reject(new Error(m.error));
     };
+    const crash = (msg: string) => {
+      setFatal(msg);
+      for (const p of pending.current.values()) p.reject(new Error(msg));
+      pending.current.clear();
+    };
+    w.onerror = (e) => crash(e.message || "worker");
+    w.onmessageerror = () => crash("worker message");
+    // a worker that never answers (stale files, blocked database) should not leave the page on "calculating" forever
+    const stuck = setTimeout(() => crash("timeout"), 45_000);
     call<Extract<Res, { type: "load" }>>({ type: "load" })
       .then((r) => setExtent(r.extent))
-      .finally(() => setReady(true));
-    return () => w.terminate();
+      .catch((e) => crash(e instanceof Error ? e.message : String(e)))
+      .finally(() => {
+        clearTimeout(stuck);
+        setReady(true);
+      });
+    return () => {
+      clearTimeout(stuck);
+      w.terminate();
+    };
   }, [call]);
 
   const setCoverColor = useCallback((c: Rgb | null) => {
@@ -236,6 +257,11 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         }
       },
       cancelLookup: () => void call({ type: "lookupCancel" }),
+      exportBackup: async () => {
+        const r = await call<Extract<Res, { type: "export" }>>({ type: "export" });
+        return { blob: r.blob, count: r.count };
+      },
+      fatal,
       dashboard: async (f) => {
         const r = await call<Extract<Res, { type: "dashboard" }>>({
           type: "dashboard",
@@ -274,7 +300,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ready, extent, settings, theme, autoTheme, genreMix, mascot, year, setSettings, setCoverColor, call],
+    [ready, extent, settings, theme, autoTheme, genreMix, mascot, year, fatal, setSettings, setCoverColor, call],
   );
 
   return <C.Provider value={value}>{children}</C.Provider>;

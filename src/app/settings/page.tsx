@@ -20,7 +20,8 @@ function Preview({ id }: { id: ThemeId }) {
 }
 
 export default function Settings() {
-  const { t, settings, setSettings, autoTheme, theme, genreMix, extent, lookupGenres, cancelLookup } = useStatify();
+  const { t, settings, setSettings, autoTheme, theme, genreMix, extent, lookupGenres, cancelLookup, exportBackup } = useStatify();
+  const [bk, setBk] = useState<{ busy: boolean; msg?: string }>({ busy: false });
   const [mb, setMb] = useState<{ running: boolean; done: number; total: number; result?: string }>({ running: false, done: 0, total: 0 });
   const lang = settings.lang;
   const hasData = !!extent?.first;
@@ -56,6 +57,38 @@ export default function Settings() {
           </div>
         )}
       </section>
+
+      {hasData && (
+        <section className="card space-y-3 p-4">
+          <div>
+            <h2 className="display text-xl">{t("bkTitle")}</h2>
+            <p className="text-sm text-muted">{t("bkSub")}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              disabled={bk.busy}
+              onClick={async () => {
+                setBk({ busy: true });
+                try {
+                  const { blob, count } = await exportBackup();
+                  const a = document.createElement("a");
+                  a.href = URL.createObjectURL(blob);
+                  a.download = `statify-backup-${new Date().toISOString().slice(0, 10)}.json.gz`;
+                  a.click();
+                  setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
+                  setBk({ busy: false, msg: t("bkDone").replace("{n}", String(count)) });
+                } catch {
+                  setBk({ busy: false });
+                }
+              }}
+              className="rounded-full bg-accent px-4 py-1.5 text-sm text-onaccent disabled:opacity-60"
+            >
+              {bk.busy ? t("bkBusy") : t("bkExport")}
+            </button>
+            {bk.msg && <span className="text-sm text-muted" role="status">{bk.msg}</span>}
+          </div>
+        </section>
+      )}
 
       {hasData && (
         <section className="card space-y-3 p-4">

@@ -7,6 +7,7 @@ import { GENRE_COLOR, GENRES, type Genre } from "@/lib/theme/themes";
 import { useTip } from "@/components/Tip";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtDec, fmtInt } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 const hoursOf = (ms: number) => ms / 3_600_000;
 
@@ -90,7 +91,7 @@ export default function Genres() {
   return (
     <div className="space-y-5">
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : !shown.length ? (
         <p className="text-muted">{t("gnNone")}</p>
       ) : (

@@ -7,6 +7,7 @@ import { yearStart, fmtDec, fmtInt } from "@/lib/format";
 import { GENRE_COLOR, GENRES } from "@/lib/theme/themes";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { ChartTooltip } from "@/components/ChartTooltip";
+import { Skeleton } from "@/components/Skeleton";
 
 const field = "w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-sm text-fg";
 
@@ -101,7 +102,7 @@ export default function Compare() {
         </label>
       </div>
       {!rows ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <>
           <section className="card space-y-2 p-4">

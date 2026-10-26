@@ -18,6 +18,7 @@ export type Req =
   | { id: number; type: "load" }
   | { id: number; type: "ingest"; files: File[] }
   | { id: number; type: "clear" }
+  | { id: number; type: "export" }
   | { id: number; type: "dashboard"; filter: Filter; tz: string }
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
   | { id: number; type: "search"; q: string; filter: Filter }
@@ -42,6 +43,7 @@ export type Res =
       skipped: IngestResult["skipped"];
     }
   | { id: number; ok: true; type: "clear" }
+  | { id: number; ok: true; type: "export"; blob: Blob; count: number }
   | { id: number; ok: true; type: "dashboard"; data: DashboardData }
   | { id: number; ok: true; type: "detail"; data: Detail | null }
   | { id: number; ok: true; type: "search"; hits: SearchHit[] }
@@ -61,6 +63,13 @@ let tz = "UTC";
 let index: ReturnType<typeof buildIndex> | null = null;
 let indexMin = -1;
 let cancelLookup = false;
+
+const BACKUP_FORMAT = "statify-backup";
+type Backup = { format: string; plays: unknown[]; genres?: [string, string][] };
+const isBackup = (d: unknown): d is Backup & { plays: Play[] } => !!d && typeof d === "object" && (d as Backup).format === BACKUP_FORMAT && Array.isArray((d as Backup).plays);
+const isPlay = (p: unknown): p is Play => !!p && typeof p === "object" && typeof (p as Play).start === "number" && typeof (p as Play).ms === "number" && typeof (p as Play).uri === "string" && typeof (p as Play).kind === "string";
+/** plain JSON or a gzipped backup */
+const readText = (f: File) => (f.name.toLowerCase().endsWith(".gz") ? new Response(f.stream().pipeThrough(new DecompressionStream("gzip"))).text() : f.text());
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -90,34 +99,55 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         break;
       }
       case "ingest": {
-        const parsed: { name: string; data: unknown }[] = [];
+        // one file at a time, so only one parsed export is in memory at once
+        let added = 0;
+        let duplicates = 0;
+        let invalid = 0;
         let done = 0;
+        const skipped: Extract<Res, { type: "ingest" }>["skipped"] = [];
         for (const f of r.files) {
           try {
-            parsed.push({ name: f.name, data: JSON.parse(await f.text()) });
+            const data = JSON.parse(await readText(f));
+            const fresh: Play[] = [];
+            if (isBackup(data)) {
+              for (const p of data.plays) {
+                if (!isPlay(p)) invalid++;
+                else if (known.has(dedupeKey(p))) duplicates++;
+                else {
+                  known.add(dedupeKey(p));
+                  fresh.push(p);
+                }
+              }
+              for (const [key, g] of data.genres ?? []) {
+                if (typeof key === "string" && isGenre(g)) {
+                  setExtraGenre(key, g);
+                  await putGenre(key, g);
+                }
+              }
+            } else {
+              const res = ingest([{ name: f.name, data }], known);
+              fresh.push(...res.added);
+              duplicates += res.duplicates;
+              invalid += res.invalid;
+              skipped.push(...res.skipped);
+            }
+            await appendPlays(fresh);
+            for (const p of fresh) plays.push(p);
+            added += fresh.length;
           } catch {
-            parsed.push({ name: f.name, data: null });
+            skipped.push({ name: f.name, reason: "not-json" });
           }
           post({ id: -1, progress: { done: ++done, total: r.files.length } });
         }
-        const res = ingest(parsed, known);
-        await appendPlays(res.added);
-        plays = plays.concat(res.added);
         index = null;
-        const skipped = [...res.skipped];
-        parsed.forEach((p) => {
-          if (p.data === null) skipped.push({ name: p.name, reason: "not-json" });
-        });
-        post({
-          id: r.id,
-          ok: true,
-          type: "ingest",
-          extent: extent(plays, tz),
-          added: res.added.length,
-          duplicates: res.duplicates,
-          invalid: res.invalid,
-          skipped,
-        });
+        post({ id: r.id, ok: true, type: "ingest", extent: extent(plays, tz), added, duplicates, invalid, skipped });
+        break;
+      }
+      case "export": {
+        const genres = [...(await loadGenreCache())].filter(([, g]) => g);
+        const json = JSON.stringify({ format: BACKUP_FORMAT, version: 1, exportedAt: new Date().toISOString(), plays, genres });
+        const blob = await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream("gzip"))).blob();
+        post({ id: r.id, ok: true, type: "export", blob, count: plays.length });
         break;
       }
       case "clear": {

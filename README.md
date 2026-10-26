@@ -20,6 +20,7 @@ Upload the **Extended streaming history** you can request from Spotify and explo
 - **Drawn designs per genre** (15 themes, automatic or manual) with a mascot that reacts to your taste, and an accent colour taken from your album covers
 - **Wrapped**: a full-screen story per year or all time, exportable as an image
 - **Habits**: skip rates, most-skipped tracks, repeats, albums you listen to start to finish
+- **Backup**: save everything as one file (Settings) and load it on another device
 - Installable **PWA** that works offline, German and English, keyboard friendly, respects reduced motion
 
 ## Privacy

@@ -12,6 +12,7 @@ import { Segmented } from "@/components/Segmented";
 import type { Key } from "@/lib/i18n/dict";
 import type { Phase } from "@/lib/stats/extras";
 import { fmtMonth } from "@/lib/format-month";
+import { Skeleton } from "@/components/Skeleton";
 
 const fmtMs = (ms: number, lang: "en" | "de") => (ms >= 3_600_000 ? `${fmtDec(ms / 3_600_000, lang)} h` : `${fmtInt(ms / 60_000, lang)} min`);
 
@@ -107,7 +108,7 @@ export default function Trends() {
       </div>
       <p className="text-xs text-muted">{t("trSince")}</p>
       {!g ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Section title={t("trRising")} items={g.rising} type={type} mode="up" lang={lang} />

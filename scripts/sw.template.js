@@ -10,9 +10,10 @@ const PAGES = `${VERSION}-pages`;
 const IMAGES = `${VERSION}-images`;
 const MAX_IMAGES = 400;
 
-const ROUTES = ["/", "/dashboard/", "/patterns/", "/behavior/", "/discovery/", "/trends/", "/genres/", "/compare/", "/podcasts/", "/wrapped/", "/item/", "/settings/"];
+const ROUTES = ["/", "/dashboard/"];
 
-// Pre-cache every page and the build files it references, so all sections open offline right after the first visit.
+// Pre-cache the start page and the dashboard with their build files; every other page is kept after its first visit.
+// (Pre-caching everything re-downloads the whole app on each deployment.)
 async function precache() {
   const pages = await caches.open(PAGES);
   const files = await caches.open(STATIC);

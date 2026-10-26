@@ -15,7 +15,7 @@ export function Dropzone() {
   const [error, setError] = useState<string | null>(null);
 
   async function handle(list: FileList | File[]) {
-    const files = [...list].filter((f) => f.name.toLowerCase().endsWith(".json"));
+    const files = [...list].filter((f) => /\.(json|gz)$/i.test(f.name));
     if (!files.length) return;
     setBusy({ done: 0, total: files.length });
     setError(null);
@@ -57,7 +57,7 @@ export function Dropzone() {
         <input
           ref={input}
           type="file"
-          accept=".json,application/json"
+          accept=".json,.gz,application/json,application/gzip"
           multiple
           hidden
           onChange={(e) => e.target.files && void handle(e.target.files)}

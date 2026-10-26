@@ -10,6 +10,7 @@ import { Stat } from "@/components/Stat";
 import { MonthChart } from "@/components/MonthChart";
 import { TopList } from "@/components/TopList";
 import { fmtDate, fmtDuration, fmtInt } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 function Item() {
   const params = useSearchParams();
@@ -29,7 +30,7 @@ function Item() {
     };
   }, [ready, type, id, extent, settings.minPlayMs, settings.tz, detail]);
 
-  if (!ready || (extent?.first && d === undefined)) return <p className="text-muted">{t("loading")}</p>;
+  if (!ready || (extent?.first && d === undefined)) return <Skeleton />;
   if (ready && !extent?.first) return <EmptyNotice />;
   if (!d)
     return (

@@ -7,6 +7,7 @@ import { Stat } from "@/components/Stat";
 import { TopList } from "@/components/TopList";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtDuration, fmtInt } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 export default function Podcasts() {
   const { t, settings } = useStatify();
@@ -16,7 +17,7 @@ export default function Podcasts() {
     <div className="space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : data.episodes === 0 && data.video.entries === 0 ? (
         <p className="text-muted">{t("noPodcasts")}</p>
       ) : (

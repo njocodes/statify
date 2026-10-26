@@ -11,6 +11,7 @@ import { TopList } from "@/components/TopList";
 import { fetchCover } from "@/components/Cover";
 import { blend, dominantColor, loadForPixels, type Rgb } from "@/lib/theme/coverColor";
 import { DAYS_PER_MONTH, fmtDec, fmtInt, hours } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
 
 export default function Dashboard() {
   const { t, settings, setCoverColor } = useStatify();
@@ -43,7 +44,7 @@ export default function Dashboard() {
     <div className="space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
-        <p className="text-muted">{t("loading")}</p>
+        <Skeleton />
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
