@@ -770,8 +770,10 @@ h3,
   border: 2px solid var(--ink);
 }
 /* the nav is one pill: its links stay borderless */
-[data-theme]:not([data-theme="classic"]) header nav a.rounded-full,
-[data-theme="clean"] header nav a.rounded-full {
+[data-theme]:not([data-theme="classic"]) nav a.rounded-full,
+[data-theme]:not([data-theme="classic"]) nav button.rounded-full,
+[data-theme="clean"] nav a.rounded-full,
+[data-theme="clean"] nav button.rounded-full {
   border: 0;
 }
 [data-theme="punk"] .rounded-full,

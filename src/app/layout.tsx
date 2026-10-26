@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SvgDefs />
         <StatifyProvider>
           <Nav />
-          <main className="mx-auto w-full max-w-6xl px-4 pb-24 pt-6">{children}</main>
+          <main className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 sm:pb-24">{children}</main>
         </StatifyProvider>
       </body>
     </html>

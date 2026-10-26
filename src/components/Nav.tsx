@@ -1,67 +1,114 @@
 "use client";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStatify } from "@/lib/store/StatifyProvider";
+import type { Key } from "@/lib/i18n/dict";
 import { SearchBox } from "./SearchBox";
 import { Logo } from "./Logo";
+
+type Item = { href: string; key: Key; icon: ReactNode };
+
+const svg = (d: string) => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+    <path d={d} />
+  </svg>
+);
+
+const DASH: Item = { href: "/dashboard/", key: "nav_dashboard", icon: svg("M4 4h7v7H4zM13 4h7v4h-7zM13 11h7v9h-7zM4 14h7v6H4z") };
+const PATTERNS: Item = { href: "/patterns/", key: "nav_patterns", icon: svg("M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2") };
+const BEHAVIOR: Item = { href: "/behavior/", key: "nav_behavior", icon: svg("M5 5l9 7-9 7zM18 5v14") };
+const DISCOVERY: Item = { href: "/discovery/", key: "nav_discovery", icon: svg("M12 3a9 9 0 100 18 9 9 0 000-18zM15.5 8.5l-2 5-5 2 2-5z") };
+const PODCASTS: Item = { href: "/podcasts/", key: "nav_podcasts", icon: svg("M9 4a3 3 0 016 0v7a3 3 0 01-6 0zM5 11a7 7 0 0014 0M12 18v3") };
+const UPLOAD: Item = { href: "/", key: "nav_upload", icon: svg("M12 16V4M7 9l5-5 5 5M5 20h14") };
+const SETTINGS: Item = { href: "/settings/", key: "nav_settings", icon: svg("M12 3a9 9 0 100 18c1.5 0 2-1 1.4-2-.6-1 0-2.2 1.2-2.2H17a4 4 0 004-4c0-5-4-9.8-9-9.8zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01") };
+
+const slide = "transition-[transform,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]";
 
 export function Nav() {
   const { t, settings, setSettings, extent } = useStatify();
   const path = usePathname();
   const hasData = !!extent?.first;
-  const items = [
-    ...(hasData ? [{ href: "/dashboard/", label: t("nav_dashboard") }, { href: "/patterns/", label: t("nav_patterns") }, { href: "/behavior/", label: t("nav_behavior") }, { href: "/discovery/", label: t("nav_discovery") }, { href: "/podcasts/", label: t("nav_podcasts") }] : []),
-    { href: "/", label: t("nav_upload") },
-    { href: "/settings/", label: t("nav_settings") },
-  ];
+  const all = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY, PODCASTS, UPLOAD, SETTINGS] : [UPLOAD, SETTINGS];
+  // Phone: four main tabs plus a "more" sheet, like a native tab bar.
+  const tabs = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY] : [UPLOAD, SETTINGS];
+  const more = hasData ? [PODCASTS, UPLOAD, SETTINGS] : [];
+  const moreActive = more.some((i) => i.href === path);
+  const [sheet, setSheet] = useState(false);
+
+  // Desktop: the sliding indicator follows the active link, measured so any label width works.
   const rail = useRef<HTMLElement>(null);
   const [pill, setPill] = useState<{ x: number; w: number } | null>(null);
-  const activeHref = items.find((i) => i.href === path)?.href;
-  // The sliding indicator follows the active link; measured, so it works for any label width.
+  const activeHref = all.find((i) => i.href === path)?.href;
   useLayoutEffect(() => {
     const el = rail.current?.querySelector<HTMLElement>(`[data-href="${activeHref}"]`);
     setPill(el ? { x: el.offsetLeft, w: el.offsetWidth } : null);
-    el?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
   }, [activeHref, settings.lang, hasData]);
+
+  const slots = tabs.length + (more.length ? 1 : 0);
+  const active = moreActive ? tabs.length : tabs.findIndex((i) => i.href === path);
+
   return (
-    <header className="sticky top-0 z-20 border-b border-line bg-bg/80 backdrop-blur" style={{ paddingTop: "env(safe-area-inset-top)" }}>
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-        <Link href={hasData ? "/dashboard/" : "/"} className="shrink-0" aria-label="Statify"><Logo /></Link>
-        <nav
-          ref={rail}
-          className="no-scrollbar relative order-last flex w-full gap-0.5 overflow-x-auto rounded-full border border-line bg-surface2 p-1 sm:order-none sm:w-auto"
-        >
-          {pill && (
-            <span
-              aria-hidden
-              className="absolute bottom-1 top-1 rounded-full bg-accent shadow-sm transition-[transform,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]"
-              style={{ width: pill.w, transform: `translateX(${pill.x}px)` }}
-            />
-          )}
-          {items.map((i) => (
-            <Link
-              key={i.href}
-              href={i.href}
-              data-href={i.href}
-              className={`relative z-10 shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-[color,transform] duration-150 active:scale-95 ${
-                path === i.href ? "text-onaccent" : "text-muted hover:text-fg"
-              }`}
-            >
-              {i.label}
+    <>
+      <header className="sticky top-0 z-20 border-b border-line bg-bg/80 backdrop-blur" style={{ paddingTop: "env(safe-area-inset-top)" }}>
+        <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
+          <Link href={hasData ? "/dashboard/" : "/"} className="shrink-0" aria-label="Statify"><Logo /></Link>
+          <nav ref={rail} className="relative hidden rounded-full border border-line bg-surface2 p-1 sm:flex">
+            {pill && <span aria-hidden className={`absolute bottom-1 top-1 rounded-full bg-accent shadow-sm ${slide}`} style={{ width: pill.w, transform: `translateX(${pill.x}px)` }} />}
+            {all.map((i) => (
+              <Link
+                key={i.href}
+                href={i.href}
+                data-href={i.href}
+                className={`relative z-10 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-[color,transform] duration-150 active:scale-95 ${path === i.href ? "text-onaccent" : "text-muted hover:text-fg"}`}
+              >
+                {t(i.key)}
+              </Link>
+            ))}
+          </nav>
+          <div className="hidden flex-1 sm:block" />
+          {hasData && <SearchBox />}
+          <button
+            onClick={() => setSettings({ lang: settings.lang === "de" ? "en" : "de" })}
+            className="ml-auto shrink-0 rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg sm:ml-0"
+            aria-label="Language"
+          >
+            {settings.lang === "de" ? "EN" : "DE"}
+          </button>
+        </div>
+      </header>
+
+      {/* phone tab bar */}
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 px-4 sm:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+        {sheet && (
+          <>
+            <button aria-label="Close" className="pointer-events-auto fixed inset-0 -z-10 cursor-default" onClick={() => setSheet(false)} />
+            <div className="pointer-events-auto page-in w-full max-w-sm self-end rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "11rem" }}>
+              {more.map((i) => (
+                <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm active:scale-[0.97] ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
+                  {i.icon}
+                  {t(i.key)}
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
+        <nav className="pointer-events-auto relative grid w-full max-w-sm rounded-full border border-line bg-surface/90 p-1 shadow-lg backdrop-blur-xl" style={{ gridTemplateColumns: `repeat(${slots}, 1fr)` }}>
+          {active >= 0 && <span aria-hidden className={`absolute bottom-1 left-1 top-1 rounded-full bg-accent ${slide}`} style={{ width: `calc((100% - 0.5rem) / ${slots})`, transform: `translateX(${active * 100}%)` }} />}
+          {tabs.map((i) => (
+            <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`relative z-10 flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium transition-[color,transform] active:scale-90 ${path === i.href ? "text-onaccent" : "text-muted"}`}>
+              {i.icon}
+              {t(i.key)}
             </Link>
           ))}
+          {more.length > 0 && (
+            <button onClick={() => setSheet((s) => !s)} aria-expanded={sheet} className={`relative z-10 flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium ${moreActive ? "text-onaccent" : "text-muted"}`}>
+              {svg("M5 12h.01M12 12h.01M19 12h.01")}
+              {t("nav_more")}
+            </button>
+          )}
         </nav>
-        <div className="hidden flex-1 sm:block" />
-        {hasData && <SearchBox />}
-        <button
-          onClick={() => setSettings({ lang: settings.lang === "de" ? "en" : "de" })}
-          className="rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg"
-          aria-label="Language"
-        >
-          {settings.lang === "de" ? "EN" : "DE"}
-        </button>
       </div>
-    </header>
+    </>
   );
 }
