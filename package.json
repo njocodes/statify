@@ -22,10 +22,12 @@
   ],
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/make-sw.mjs",
     "build": "next build",
     "lint": "eslint",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "predev": "node scripts/make-sw.mjs"
   },
   "dependencies": {
     "html-to-image": "^1.11.13",

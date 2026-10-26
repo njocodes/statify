@@ -18,6 +18,11 @@ function db() {
       if (!d.objectStoreNames.contains("covers")) d.createObjectStore("covers");
       if (!d.objectStoreNames.contains("genres")) d.createObjectStore("genres");
     },
+    // a newer tab wants to upgrade: let go of this connection instead of blocking it
+    blocking() {
+      void dbp?.then((d) => d.close());
+      dbp = null;
+    },
   }));
 }
 

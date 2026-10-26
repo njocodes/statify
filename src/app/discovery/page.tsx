@@ -4,6 +4,7 @@ import { useStatify } from "@/lib/store/StatifyProvider";
 import { useView } from "@/lib/store/useView";
 import type { DiscoveryData } from "@/lib/stats/views";
 import { FilterBar } from "@/components/FilterBar";
+import { ChartTooltip } from "@/components/ChartTooltip";
 import { BumpChart } from "@/components/BumpChart";
 import { TopList } from "@/components/TopList";
 import { EmptyNotice } from "@/components/EmptyNotice";
@@ -29,8 +30,8 @@ export default function Discovery() {
                 <BarChart data={data.newArtists} margin={{ left: -20, right: 4, top: 4 }}>
                   <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
-                  <Bar dataKey="count" fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
+                  <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} content={<ChartTooltip />} />
+                  <Bar dataKey="count" name={t("newArtistsShort")} fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -42,7 +43,7 @@ export default function Discovery() {
                 <BarChart data={data.newShare.map((d) => ({ month: d.month, new: Math.round(d.newMs / 3.6e5) / 10, known: Math.round(d.knownMs / 3.6e5) / 10 }))} margin={{ left: -20, right: 4, top: 4 }}>
                   <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} formatter={(v) => [`${v} h`, ""]} />
+                  <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} content={<ChartTooltip unit=" h" total sort="none" />} />
                   <Bar dataKey="known" name={t("dcKnown")} stackId="a" fill="var(--surface-2)" isAnimationActive={false} />
                   <Bar dataKey="new" name={t("dcNew")} stackId="a" fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
                 </BarChart>

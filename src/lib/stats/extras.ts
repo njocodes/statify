@@ -25,10 +25,13 @@ export interface GenreStats {
   rows: GenreRow[];
   totalMs: number;
   matchedMs: number;
+  /** per year: ms per sub-genre id, grouped by main genre */
+  yearlySubs: Record<string, Partial<Record<Genre, Record<string, number>>>>;
 }
 
 export function genreStats(all: Play[], f: Filter): GenreStats {
   const yearly: GenreStats["yearly"] = {};
+  const yearlySubs: GenreStats["yearlySubs"] = {};
   const rows = new Map<Genre, { ms: number; plays: number; skipped: number; n: number; night: number; subs: Map<string, number>; artists: Map<string, number> }>();
   let totalMs = 0;
   let matchedMs = 0;
@@ -41,6 +44,8 @@ export function genreStats(all: Play[], f: Filter): GenreStats {
     matchedMs += p.ms;
     const y = dayKey(p.start, f.tz).slice(0, 4);
     (yearly[y] ??= {})[g.genre] = (yearly[y][g.genre] ?? 0) + p.ms;
+    const subs = ((yearlySubs[y] ??= {})[g.genre] ??= {});
+    subs[g.sub] = (subs[g.sub] ?? 0) + p.ms;
     let r = rows.get(g.genre);
     if (!r) rows.set(g.genre, (r = { ms: 0, plays: 0, skipped: 0, n: 0, night: 0, subs: new Map(), artists: new Map() }));
     r.ms += p.ms;
@@ -55,6 +60,7 @@ export function genreStats(all: Play[], f: Filter): GenreStats {
   return {
     years: Object.keys(yearly).sort(),
     yearly,
+    yearlySubs,
     totalMs,
     matchedMs,
     rows: [...rows.entries()]

@@ -1,5 +1,6 @@
 "use client";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartTooltip } from "./ChartTooltip";
 import type { DiscoveryData } from "@/lib/stats/views";
 
 const COLORS = ["var(--accent)", "#f5a524", "#4aa8ff", "#ff5c8a", "#b388ff", "#2dd4bf", "#ff8a4c", "#e0e04a", "#8ab4a0", "#ff6b6b"];
@@ -21,7 +22,7 @@ export function BumpChart({ data }: { data: DiscoveryData }) {
           <CartesianGrid stroke="var(--border)" vertical={false} />
           <XAxis dataKey="year" tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} />
           <YAxis reversed domain={[1, MAX_RANK]} ticks={Array.from({ length: MAX_RANK }, (_, i) => i + 1)} tick={{ fill: "var(--muted)", fontSize: 11 }} axisLine={false} tickLine={false} allowDecimals={false} />
-          <Tooltip contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
+          <Tooltip content={<ChartTooltip sort="asc" rank />} />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           {data.rankArtists.map((a, i) => (
             <Line key={a} dataKey={a} stroke={COLORS[i % COLORS.length]} strokeWidth={2.5} dot={{ r: 4 }} connectNulls={false} isAnimationActive={false} />

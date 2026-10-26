@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getCover, putCover } from "@/lib/store/db";
 
 // Only well-formed Spotify ids are sent out, and only thumbnails from Spotify's own CDNs are used.
+const KINDS = new Set(["track", "episode", "show"]);
 const TRACK_ID = /^[A-Za-z0-9]{22}$/;
 const trustedImage = (u: unknown): string | null => {
   try {
@@ -19,14 +20,16 @@ export function fetchCover(uri: string): Promise<string | null> {
   let p = mem.get(uri);
   if (!p) {
     p = (async () => {
-      const cached = await getCover(uri).catch(() => undefined);
+      const [, kind = "", id = ""] = uri.split(":");
+      if (!KINDS.has(kind) || !TRACK_ID.test(id)) return null;
+      // episodes were once looked up as tracks and cached as "no cover", so they use a fresh cache key
+      const key = kind === "track" ? uri : `v2:${uri}`;
+      const cached = await getCover(key).catch(() => undefined);
       if (cached) return cached.url;
-      const id = uri.split(":")[2] ?? "";
-      if (!TRACK_ID.test(id)) return null;
       try {
-        const r = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/track/${id}`)}`);
+        const r = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/${kind}/${id}`)}`);
         const url = r.ok ? trustedImage((await r.json()).thumbnail_url) : null;
-        await putCover(uri, url).catch(() => {});
+        await putCover(key, url).catch(() => {});
         return url;
       } catch {
         return null; // CORS/offline: fall back to placeholder, don't cache

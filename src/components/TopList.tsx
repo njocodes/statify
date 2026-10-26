@@ -1,31 +1,36 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TopItem } from "@/lib/stats/core";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { fmtInt } from "@/lib/format";
 import Link from "next/link";
 import { Cover } from "./Cover";
+import { Segmented } from "./Segmented";
 import type { EntityType } from "@/lib/stats/detail";
 
 export function TopList({ title, items, type }: { title: string; items: Record<"plays" | "ms", TopItem[]>; type: EntityType }) {
   const { t, settings } = useStatify();
   const [by, setBy] = useState<"plays" | "ms">("plays");
   const [n, setN] = useState(10);
+  const box = useRef<HTMLOListElement>(null);
+  const shown = useRef(10);
+  // After "+20" the list keeps its height and scrolls a few rows, so the new entries are visibly there.
+  useEffect(() => {
+    const old = shown.current;
+    shown.current = n;
+    if (n <= old) return;
+    const li = box.current?.children[Math.max(0, old - 3)] as HTMLElement | undefined;
+    if (li) box.current?.scrollTo({ top: li.offsetTop, behavior: "smooth" });
+  }, [n]);
   const list = items[by].slice(0, n);
   const max = list[0]?.[by] || 1;
   return (
     <section className="card min-w-0 p-4">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold">{title}</h2>
-        <div className="flex rounded-full bg-surface2 p-0.5 text-xs">
-          {(["plays", "ms"] as const).map((k) => (
-            <button key={k} onClick={() => setBy(k)} className={`rounded-full px-3 py-1 ${by === k ? "bg-accent text-onaccent" : "text-muted"}`}>
-              {k === "plays" ? t("byPlays") : t("byMinutes")}
-            </button>
-          ))}
-        </div>
+        <Segmented size="sm" value={by} onChange={setBy} options={[["plays", t("byPlays")], ["ms", t("byMinutes")]]} />
       </div>
-      <ol className="space-y-2">
+      <ol ref={box} className={`relative space-y-2 ${n > 10 ? "-mr-2 max-h-[38.5rem] overflow-y-auto overscroll-contain pr-2" : ""}`}>
         {list.map((it, i) => (
           <li key={it.key}>
             {/* the whole row is the tap target, so it works comfortably on phones */}

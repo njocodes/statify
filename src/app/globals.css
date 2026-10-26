@@ -769,13 +769,14 @@ h3,
 [data-theme]:not([data-theme="classic"]) a.rounded-full {
   border: 2px solid var(--ink);
 }
-/* the nav is one pill: its links stay borderless */
+/* the nav and segmented controls are one pill: their buttons stay borderless */
 [data-theme]:not([data-theme="classic"]) nav a.rounded-full,
 [data-theme]:not([data-theme="classic"]) nav button.rounded-full,
 [data-theme="clean"] nav a.rounded-full,
 [data-theme="clean"] nav button.rounded-full {
   border: 0;
 }
+.seg button { border: 0 !important; }
 [data-theme="punk"] .rounded-full,
 [data-theme="punk"] .rounded-md,
 [data-theme="punk"] input,

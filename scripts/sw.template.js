@@ -2,7 +2,9 @@
 // - hashed build files (/_next/static/): cache first, they never change
 // - pages and everything else on this origin: network first, last good copy as offline fallback
 // - cover images from Spotify's CDN: cache first with a size cap
-const VERSION = "statify-v2";
+// __BUILD__ is replaced by scripts/make-sw.mjs, so every deployment gets its own caches.
+// (Turbopack can reuse a file name for different content, so cached build files must never outlive their build.)
+const VERSION = "statify-__BUILD__";
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const IMAGES = `${VERSION}-images`;
@@ -71,8 +73,11 @@ async function networkFirst(req) {
 
 async function cacheFirst(req, name, limit) {
   const cache = await caches.open(name);
-  // the worker entry carries its chunk list in the query string, which may differ from the precached copy
-  const hit = await cache.match(req, { ignoreSearch: /turbopack-worker/.test(req.url) });
+  // The worker entry reads its chunk list from its own URL (#params). A response taken from the cache carries the
+  // URL it was stored under and would drop that part, so it is handed out as a fresh Response without a URL.
+  const entry = /turbopack-worker/.test(req.url);
+  const found = await cache.match(req, { ignoreSearch: entry });
+  const hit = found && entry ? new Response(found.body, { status: found.status, headers: found.headers }) : found;
   if (hit) return hit;
   const res = await fetch(req);
   if (res.ok || res.type === "opaque") {

@@ -8,23 +8,12 @@ import { Cover } from "@/components/Cover";
 import { Spark } from "@/components/Spark";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtDec, fmtInt } from "@/lib/format";
+import { Segmented } from "@/components/Segmented";
 import type { Key } from "@/lib/i18n/dict";
 import type { Phase } from "@/lib/stats/extras";
 import { fmtMonth } from "@/lib/format-month";
 
 const fmtMs = (ms: number, lang: "en" | "de") => (ms >= 3_600_000 ? `${fmtDec(ms / 3_600_000, lang)} h` : `${fmtInt(ms / 60_000, lang)} min`);
-
-function Segmented<T extends string | number>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
-  return (
-    <div className="inline-flex rounded-full border border-line bg-surface2 p-0.5 text-sm">
-      {options.map(([v, label]) => (
-        <button key={String(v)} onClick={() => onChange(v)} className={`rounded-full px-3 py-1 ${v === value ? "bg-accent font-semibold text-onaccent" : "text-muted"}`}>
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
 
 function Row({ it, type, mode, lang }: { it: TrendItem; type: "artist" | "track"; mode: "up" | "down" | "new"; lang: "en" | "de" }) {
   const { t } = useStatify();
