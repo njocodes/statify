@@ -4,12 +4,15 @@ import { dedupeKey, type Play } from "../parse/normalize";
 import { appendPlays, clearAll, loadPlays } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
+import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
 export type Req =
   | { id: number; type: "load" }
   | { id: number; type: "ingest"; files: File[] }
   | { id: number; type: "clear" }
-  | { id: number; type: "dashboard"; filter: Filter; tz: string };
+  | { id: number; type: "dashboard"; filter: Filter; tz: string }
+  | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
+  | { id: number; type: "search"; q: string; filter: Filter };
 
 export type Res =
   | { id: number; ok: true; type: "load"; extent: Extent }
@@ -25,12 +28,16 @@ export type Res =
     }
   | { id: number; ok: true; type: "clear" }
   | { id: number; ok: true; type: "dashboard"; data: DashboardData }
+  | { id: number; ok: true; type: "detail"; data: Detail | null }
+  | { id: number; ok: true; type: "search"; hits: SearchHit[] }
   | { id: number; ok: false; error: string }
   | { id: -1; progress: { done: number; total: number } };
 
 let plays: Play[] = [];
 let known = new Set<string>();
 let tz = "UTC";
+let index: ReturnType<typeof buildIndex> | null = null;
+let indexMin = -1;
 
 const post = (m: Res) => (self as unknown as Worker).postMessage(m);
 
@@ -40,6 +47,7 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
     switch (r.type) {
       case "load": {
         plays = await loadPlays();
+        index = null;
         known = new Set(plays.map(dedupeKey));
         post({ id: r.id, ok: true, type: "load", extent: extent(plays, tz) });
         break;
@@ -58,6 +66,7 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         const res = ingest(parsed, known);
         await appendPlays(res.added);
         plays = plays.concat(res.added);
+        index = null;
         const skipped = [...res.skipped];
         parsed.forEach((p) => {
           if (p.data === null) skipped.push({ name: p.name, reason: "not-json" });
@@ -77,6 +86,7 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       case "clear": {
         await clearAll();
         plays = [];
+        index = null;
         known = new Set();
         post({ id: r.id, ok: true, type: "clear" });
         break;
@@ -84,6 +94,18 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       case "dashboard": {
         tz = r.tz;
         post({ id: r.id, ok: true, type: "dashboard", data: dashboard(plays, r.filter) });
+        break;
+      }
+      case "detail": {
+        post({ id: r.id, ok: true, type: "detail", data: detail(plays, r.entity, r.key, r.filter) });
+        break;
+      }
+      case "search": {
+        if (!index || indexMin !== r.filter.minPlayMs) {
+          index = buildIndex(plays, r.filter);
+          indexMin = r.filter.minPlayMs;
+        }
+        post({ id: r.id, ok: true, type: "search", hits: search(index, r.q) });
         break;
       }
     }

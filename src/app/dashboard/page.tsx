@@ -40,9 +40,9 @@ export default function Dashboard() {
             <Stat label={t("streak")} value={`${data.streak.longest} ${t("days")}`} />
           </div>
           <div className="grid gap-4 lg:grid-cols-3">
-            <TopList title={t("topTracks")} items={data.top.tracks} />
-            <TopList title={t("topArtists")} items={data.top.artists} />
-            <TopList title={t("topAlbums")} items={data.top.albums} />
+            <TopList title={t("topTracks")} items={data.top.tracks} type="track" />
+            <TopList title={t("topArtists")} items={data.top.artists} type="artist" />
+            <TopList title={t("topAlbums")} items={data.top.albums} type="album" />
           </div>
         </>
       )}

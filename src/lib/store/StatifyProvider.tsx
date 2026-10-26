@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Req, Res } from "../worker/stats.worker";
 import type { Extent, DashboardData } from "../stats/query";
 import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
+import type { Detail, EntityType, SearchHit } from "../stats/detail";
 import { dicts, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
@@ -23,6 +24,8 @@ interface Ctx {
   ingest: (files: File[], onProgress?: (done: number, total: number) => void) => Promise<IngestRes>;
   clear: () => Promise<void>;
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
+  detail: (entity: EntityType, key: string) => Promise<Detail | null>;
+  search: (q: string) => Promise<SearchHit[]>;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -93,6 +96,8 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = settings.lang;
   }, [settings.lang]);
 
+  const baseFilter: Filter = { from: null, to: null, minPlayMs: settings.minPlayMs, tz: settings.tz };
+
   const value = useMemo<Ctx>(
     () => ({
       ready,
@@ -119,7 +124,16 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         });
         return r.data;
       },
+      detail: async (entity, key) => {
+        const r = await call<Extract<Res, { type: "detail" }>>({ type: "detail", entity, key, filter: baseFilter });
+        return r.data;
+      },
+      search: async (q) => {
+        const r = await call<Extract<Res, { type: "search" }>>({ type: "search", q, filter: baseFilter });
+        return r.hits;
+      },
     }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [ready, extent, settings, setSettings, call],
   );
 

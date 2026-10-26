@@ -3,9 +3,11 @@ import { useState } from "react";
 import type { TopItem } from "@/lib/stats/core";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { fmtInt } from "@/lib/format";
+import Link from "next/link";
 import { Cover } from "./Cover";
+import type { EntityType } from "@/lib/stats/detail";
 
-export function TopList({ title, items }: { title: string; items: Record<"plays" | "ms", TopItem[]> }) {
+export function TopList({ title, items, type }: { title: string; items: Record<"plays" | "ms", TopItem[]>; type: EntityType }) {
   const { t, settings } = useStatify();
   const [by, setBy] = useState<"plays" | "ms">("plays");
   const [n, setN] = useState(10);
@@ -29,7 +31,7 @@ export function TopList({ title, items }: { title: string; items: Record<"plays"
             <span className="w-5 text-right text-xs text-muted">{i + 1}</span>
             <Cover uri={it.uri} label={it.title} />
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-medium">{it.title || "–"}</div>
+              <Link href={`/item/?type=${type}&id=${encodeURIComponent(it.key)}`} className="block truncate text-sm font-medium hover:text-accent">{it.title || "–"}</Link>
               {it.subtitle && <div className="truncate text-xs text-muted">{it.subtitle}</div>}
               <div className="mt-1 h-1 rounded-full bg-surface2">
                 <div className="h-1 rounded-full bg-accent" style={{ width: `${(it[by] / max) * 100}%` }} />

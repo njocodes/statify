@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStatify } from "@/lib/store/StatifyProvider";
+import { SearchBox } from "./SearchBox";
 
 export function Nav() {
   const { t, settings, setSettings, extent } = useStatify();
@@ -30,6 +31,7 @@ export function Nav() {
             </Link>
           ))}
         </nav>
+        {hasData && <SearchBox />}
         <button
           onClick={() => setSettings({ lang: settings.lang === "de" ? "en" : "de" })}
           className="rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg"

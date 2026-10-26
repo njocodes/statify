@@ -54,6 +54,15 @@ const en = {
   calendar: "Calendar",
   mon: "Mon", tue: "Tue", wed: "Wed", thu: "Thu", fri: "Fri", sat: "Sat", sun: "Sun",
   loading: "Calculating…",
+  search: "Search artist, album, track…",
+  type_artist: "Artist", type_album: "Album", type_track: "Track",
+  rank: "Rank by plays",
+  skipRate: "Skip rate",
+  firstPlayed: "First played",
+  lastPlayed: "Last played",
+  listened: "Listened",
+  notFound: "Not found in your data.",
+  back: "Back",
 };
 
 const de: typeof en = {
@@ -110,6 +119,15 @@ const de: typeof en = {
   calendar: "Kalender",
   mon: "Mo", tue: "Di", wed: "Mi", thu: "Do", fri: "Fr", sat: "Sa", sun: "So",
   loading: "Berechne…",
+  search: "Künstler, Album, Titel suchen…",
+  type_artist: "Künstler", type_album: "Album", type_track: "Titel",
+  rank: "Rang nach Plays",
+  skipRate: "Skip-Rate",
+  firstPlayed: "Zuerst gehört",
+  lastPlayed: "Zuletzt gehört",
+  listened: "Gehört",
+  notFound: "In deinen Daten nicht gefunden.",
+  back: "Zurück",
 };
 
 export const dicts = { en, de };
