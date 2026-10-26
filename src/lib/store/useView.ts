@@ -4,7 +4,7 @@ import { useStatify } from "./StatifyProvider";
 import type { ViewData } from "../worker/stats.worker";
 import { yearStart } from "../format";
 
-export function useView<T extends ViewData>(name: "behavior" | "discovery" | "podcasts") {
+export function useView<T extends ViewData>(name: "behavior" | "discovery" | "podcasts" | "trends") {
   const { ready, extent, view, settings, year, setYear } = useStatify();
   const [data, setData] = useState<T | null>(null);
 

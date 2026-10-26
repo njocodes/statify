@@ -4,12 +4,13 @@ import { dedupeKey, type Play } from "../parse/normalize";
 import { appendPlays, clearAll, loadPlays } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
+import { trends, type TrendsData } from "../stats/trends";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
 import { genreOf, type GenreMix } from "../theme/genres";
 import { dayKey, parts } from "../stats/core";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
-export type ViewData = BehaviorData | DiscoveryData | PodcastData;
+export type ViewData = BehaviorData | DiscoveryData | PodcastData | TrendsData;
 
 export type Req =
   | { id: number; type: "load" }
@@ -19,7 +20,7 @@ export type Req =
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
   | { id: number; type: "search"; q: string; filter: Filter }
   | { id: number; type: "genres" }
-  | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts"; filter: Filter };
+  | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts" | "trends"; filter: Filter };
 
 export type Res =
   | { id: number; ok: true; type: "load"; extent: Extent }
@@ -110,8 +111,8 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         break;
       }
       case "view": {
-        const fn = { behavior, discovery, podcasts }[r.view];
-        post({ id: r.id, ok: true, type: "view", data: fn(plays, r.filter) });
+        const data = r.view === "trends" ? trends(plays) : { behavior, discovery, podcasts }[r.view](plays, r.filter);
+        post({ id: r.id, ok: true, type: "view", data });
         break;
       }
       case "genres": {

@@ -42,7 +42,7 @@ interface Ctx {
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
   detail: (entity: EntityType, key: string) => Promise<Detail | null>;
   search: (q: string) => Promise<SearchHit[]>;
-  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts", f: Pick<Filter, "from" | "to">) => Promise<T>;
+  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends", f: Pick<Filter, "from" | "to">) => Promise<T>;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -229,7 +229,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         const r = await call<Extract<Res, { type: "detail" }>>({ type: "detail", entity, key, filter: baseFilter });
         return r.data;
       },
-      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts", f: Pick<Filter, "from" | "to">) => {
+      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends", f: Pick<Filter, "from" | "to">) => {
         const r = await call<Extract<Res, { type: "view" }>>({
           type: "view",
           view,
