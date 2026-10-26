@@ -16,7 +16,7 @@ const fraktur = UnifrakturCook({ subsets: ["latin"], preload: false, weight: "70
 const elite = Special_Elite({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-elite" });
 
 export const metadata: Metadata = {
-  title: "Statify – your Spotify stats",
+  title: { default: "Statify – your Spotify stats", template: "%s – Statify" },
   description: "Upload your Spotify extended streaming history and explore your stats. Everything is calculated in your browser.",
 };
 
