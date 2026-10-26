@@ -15,7 +15,7 @@ export function MonthChart({ months }: { months: { month: string; ms: number }[]
             formatter={(v) => [`${v} h`, ""]}
             labelStyle={{ color: "var(--muted)" }}
           />
-          <Bar dataKey="h" fill="var(--accent)" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="h" fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
         </BarChart>
       </ResponsiveContainer>
     </div>

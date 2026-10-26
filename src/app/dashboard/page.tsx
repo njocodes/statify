@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { EmptyNotice } from "@/components/EmptyNotice";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { useDashboard } from "@/lib/store/useDashboard";
 import { FilterBar } from "@/components/FilterBar";
@@ -12,15 +12,7 @@ export default function Dashboard() {
   const { year, setYear, data, ready, hasData, years } = useDashboard();
   const L = settings.lang;
 
-  if (ready && !hasData)
-    return (
-      <div className="space-y-3 pt-10 text-center">
-        <p className="text-muted">{t("noData")}</p>
-        <Link href="/" className="inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-onaccent">
-          {t("goUpload")}
-        </Link>
-      </div>
-    );
+  if (ready && !hasData) return <EmptyNotice />;
 
   return (
     <div className="space-y-6">

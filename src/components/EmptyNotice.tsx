@@ -1,15 +1,15 @@
 "use client";
-import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useStatify } from "@/lib/store/StatifyProvider";
 
+/** Shown by data pages while nothing is uploaded: hands over to the upload page instead of showing a dead end. */
 export function EmptyNotice() {
-  const { t } = useStatify();
-  return (
-    <div className="space-y-3 pt-10 text-center">
-      <p className="text-muted">{t("noData")}</p>
-      <Link href="/" className="inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-onaccent">
-        {t("goUpload")}
-      </Link>
-    </div>
-  );
+  const { ready, extent } = useStatify();
+  const router = useRouter();
+  const empty = ready && !extent?.first;
+  useEffect(() => {
+    if (empty) router.replace("/");
+  }, [empty, router]);
+  return null;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { EmptyNotice } from "@/components/EmptyNotice";
 import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -29,6 +30,7 @@ function Item() {
   }, [ready, type, id, extent, settings.minPlayMs, settings.tz, detail]);
 
   if (!ready || (extent?.first && d === undefined)) return <p className="text-muted">{t("loading")}</p>;
+  if (ready && !extent?.first) return <EmptyNotice />;
   if (!d)
     return (
       <div className="space-y-3 pt-10 text-center">

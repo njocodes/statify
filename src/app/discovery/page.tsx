@@ -30,7 +30,7 @@ export default function Discovery() {
                   <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
                   <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} />
-                  <Bar dataKey="count" fill="var(--accent)" radius={[3, 3, 0, 0]} />
+                  <Bar dataKey="count" fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

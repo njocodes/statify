@@ -31,7 +31,7 @@ export function TopList({ title, items, type }: { title: string; items: Record<"
             {/* the whole row is the tap target, so it works comfortably on phones */}
             <Link
               href={`/item/?type=${type}&id=${encodeURIComponent(it.key)}`}
-              className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-1 hover:bg-surface2 active:bg-surface2"
+              className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-1 transition-transform duration-150 hover:bg-surface2 active:scale-[0.985] active:bg-surface2"
             >
               <span className="w-5 text-right text-xs text-muted">{i + 1}</span>
               <Cover uri={it.uri} label={it.title} />

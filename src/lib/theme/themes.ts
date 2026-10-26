@@ -1,4 +1,4 @@
-export const THEME_IDS = ["classic", "comic", "graffiti", "doodle", "punk", "cassette", "vaporwave", "riso", "clean"] as const;
+export const THEME_IDS = ["classic", "comic", "graffiti", "doodle", "punk", "cassette", "vaporwave", "riso", "jazz", "metal", "western", "y2k", "rave", "blueprint", "clean"] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 export type ThemeSetting = "auto" | ThemeId;
 
@@ -9,18 +9,18 @@ export type Genre = (typeof GENRES)[number];
 export const GENRE_THEME: Record<Genre, ThemeId> = {
   rap: "graffiti",
   pop: "comic",
-  rnb: "comic", // y2k, once that theme exists
+  rnb: "y2k",
   rock: "punk",
-  metal: "punk", // metal woodcut, once that theme exists
+  metal: "metal",
   indie: "riso",
   folk: "doodle",
   electronic: "vaporwave",
-  techno: "vaporwave", // rave flyer, once that theme exists
+  techno: "rave",
   hoerspiel: "cassette",
-  jazz: "classic", // blue note, once that theme exists
-  klassik: "classic", // blue note, once that theme exists
-  country: "doodle", // western poster, once that theme exists
-  ambient: "classic", // blueprint, once that theme exists
+  jazz: "jazz",
+  klassik: "jazz",
+  country: "western",
+  ambient: "blueprint",
 };
 
 export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de: string; en: string } }> = {
@@ -31,6 +31,12 @@ export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de:
   punk: { de: "Punk-Collage / Metal", en: "Punk collage / Metal", blurb: { de: "Zine-Schnipsel & Linocut", en: "Zine cut-outs & linocut" } },
   cassette: { de: "Kassette / Hörspiel", en: "Cassette / Audio play", blurb: { de: "Kassettenlabel mit Handschrift", en: "Handwritten tape labels" } },
   vaporwave: { de: "Vaporwave / Synthwave", en: "Vaporwave / Synthwave", blurb: { de: "Neon-Gitter und Sonnenuntergang", en: "Neon grid and sunset" } },
+  jazz: { de: "Jazz (Blue Note)", en: "Jazz (Blue Note)", blurb: { de: "Bauhaus-Typo, Blau und Orange", en: "Bauhaus type, blue and orange" } },
+  metal: { de: "Metal-Holzschnitt", en: "Metal woodcut", blurb: { de: "Schwarz, Knochen und Blutrot", en: "Black, bone and blood red" } },
+  western: { de: "Western / Wanted", en: "Western / Wanted", blurb: { de: "Vergilbtes Poster, Holzlettern", en: "Aged poster, wood type" } },
+  y2k: { de: "Y2K / Chrome", en: "Y2K / Chrome", blurb: { de: "Glänzende Bubbles, Aqua-Look", en: "Glossy bubbles, aqua look" } },
+  rave: { de: "Rave-Flyer / Xerox", en: "Rave flyer / Xerox", blurb: { de: "Acid-Gelb, Kopierraster", en: "Acid yellow, photocopy grit" } },
+  blueprint: { de: "Blueprint", en: "Blueprint", blurb: { de: "Bauzeichnung auf Gitterpapier", en: "Technical drawing on grid paper" } },
   clean: { de: "Clean (hell/dunkel)", en: "Clean (light/dark)", blurb: { de: "Fast nur Weiß oder Schwarz, folgt dem Handy", en: "Almost pure white or black, follows your phone" } },
   riso: { de: "Risograph-Druck", en: "Risograph print", blurb: { de: "Versetzte Farbebenen, Halbton", en: "Misregistered inks, halftone" } },
 };

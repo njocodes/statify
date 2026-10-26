@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand, UnifrakturCook, Special_Elite, Caveat, Audiowide, Archivo_Black } from "next/font/google";
+import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand, UnifrakturCook, Special_Elite, Caveat, Audiowide, Archivo_Black, Anton, Rye, Pirata_One, Fredoka, Rubik_Mono_One, Share_Tech_Mono, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { StatifyProvider } from "@/lib/store/StatifyProvider";
 import { Nav } from "@/components/Nav";
@@ -16,6 +16,13 @@ const fraktur = UnifrakturCook({ subsets: ["latin"], preload: false, weight: "70
 const caveat = Caveat({ subsets: ["latin"], preload: false, weight: ["500", "700"], variable: "--font-caveat" });
 const audiowide = Audiowide({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-audiowide" });
 const archivo = Archivo_Black({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-archivo" });
+const anton = Anton({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-anton" });
+const rye = Rye({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-rye" });
+const pirata = Pirata_One({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-pirata" });
+const fredoka = Fredoka({ subsets: ["latin"], preload: false, weight: ["400", "600"], variable: "--font-fredoka" });
+const rubikMono = Rubik_Mono_One({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-rubik-mono" });
+const shareMono = Share_Tech_Mono({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-share-mono" });
+const spaceMono = Space_Mono({ subsets: ["latin"], preload: false, weight: ["400", "700"], variable: "--font-space-mono" });
 const elite = Special_Elite({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-elite" });
 
 export const metadata: Metadata = {
@@ -29,7 +36,7 @@ export const viewport: Viewport = { viewportFit: "cover" };
 const themeScript = `try{var s=JSON.parse(localStorage.getItem('statify.settings')||'{}');var t=s.theme&&s.theme!=='auto'?s.theme:localStorage.getItem('statify.autoTheme');if(t)document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const fonts = [inter, bangers, comicNeue, marker, patrick, gochi, fraktur, elite, caveat, audiowide, archivo].map((f) => f.variable).join(" ");
+  const fonts = [inter, bangers, comicNeue, marker, patrick, gochi, fraktur, elite, caveat, audiowide, archivo, anton, rye, pirata, fredoka, rubikMono, shareMono, spaceMono].map((f) => f.variable).join(" ");
   return (
     <html lang="en" className={fonts} data-theme="classic" suppressHydrationWarning>
       <head>
