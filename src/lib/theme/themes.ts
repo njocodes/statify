@@ -1,3 +1,4 @@
+import type { Lang } from "../i18n/dict";
 export const THEME_IDS = ["classic", "clean", "paper", "noir", "mono", "poster"] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 export type ThemeSetting = "auto" | ThemeId;
@@ -36,14 +37,19 @@ export const THEME_TONE: Record<ThemeId, "light" | "dark"> = { classic: "dark", 
 /** themes that take their accent colour from the listener's top genre */
 export const GENRE_ACCENT_THEMES: ThemeId[] = ["paper", "noir", "mono", "poster"];
 
-export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de: string; en: string } }> = {
-  classic: { de: "Classic", en: "Classic", blurb: { de: "Dunkel, ruhig, grün", en: "Dark, calm, green" } },
-  clean: { de: "Clean", en: "Clean", blurb: { de: "Schwarz-Weiß, folgt dem Handy", en: "Black and white, follows your phone" } },
-  paper: { de: "Paper", en: "Paper", blurb: { de: "Magazin: Serifen, feine Linien, warmes Papier", en: "Magazine: serif type, fine rules, warm paper" } },
-  noir: { de: "Noir", en: "Noir", blurb: { de: "Schwarz, große Schlagzeilen, eine scharfe Farbe", en: "Black, big headlines, one sharp colour" } },
-  mono: { de: "Mono", en: "Mono", blurb: { de: "Technisch: Monospace, feines Raster", en: "Technical: monospace, fine grid" } },
-  poster: { de: "Poster", en: "Poster", blurb: { de: "Plakat: flache Farbe, dicke Linien, Plakatschrift", en: "Poster: flat colour, thick rules, poster type" } },
+const BLURB: Record<ThemeId, Record<Lang, string>> = {
+  classic: { en: "Dark, calm, green", de: "Dunkel, ruhig, grün", es: "Oscuro, sereno, verde", fr: "Sombre, calme, vert" },
+  clean: { en: "Black and white, follows your phone", de: "Schwarz-Weiß, folgt dem Handy", es: "Blanco y negro, sigue a tu móvil", fr: "Noir et blanc, suit votre téléphone" },
+  paper: { en: "Magazine: serif type, fine rules, warm paper", de: "Magazin: Serifen, feine Linien, warmes Papier", es: "Revista: serifas, líneas finas, papel cálido", fr: "Magazine : empattements, filets fins, papier chaud" },
+  noir: { en: "Black, big headlines, one sharp colour", de: "Schwarz, große Schlagzeilen, eine scharfe Farbe", es: "Negro, titulares grandes, un color intenso", fr: "Noir, grands titres, une couleur vive" },
+  mono: { en: "Technical: monospace, fine grid", de: "Technisch: Monospace, feines Raster", es: "Técnico: monoespaciada, cuadrícula fina", fr: "Technique : chasse fixe, grille fine" },
+  poster: { en: "Poster: flat colour, thick rules, poster type", de: "Plakat: flache Farbe, dicke Linien, Plakatschrift", es: "Cartel: color plano, líneas gruesas, tipografía de cartel", fr: "Affiche : aplats, filets épais, typo d'affiche" },
 };
+
+const NAME: Record<ThemeId, string> = { classic: "Classic", clean: "Clean", paper: "Paper", noir: "Noir", mono: "Mono", poster: "Poster" };
+
+export const themeName = (id: ThemeId) => NAME[id];
+export const themeBlurb = (id: ThemeId, lang: Lang) => BLURB[id][lang];
 
 export const isGenre = (v: unknown): v is Genre => GENRES.includes(v as Genre);
 export const isThemeId = (v: unknown): v is ThemeId => THEME_IDS.includes(v as ThemeId);

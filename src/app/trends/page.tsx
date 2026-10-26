@@ -1,4 +1,5 @@
 "use client";
+import { EmptyHint } from "@/components/EmptyHint";
 import { useState } from "react";
 import Link from "next/link";
 import { useStatify } from "@/lib/store/StatifyProvider";
@@ -9,14 +10,14 @@ import { Spark } from "@/components/Spark";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtDec, fmtInt } from "@/lib/format";
 import { Segmented } from "@/components/Segmented";
-import type { Key } from "@/lib/i18n/dict";
+import type { Key, Lang } from "@/lib/i18n/dict";
 import type { Phase } from "@/lib/stats/extras";
 import { fmtMonth } from "@/lib/format-month";
 import { Skeleton } from "@/components/Skeleton";
 
-const fmtMs = (ms: number, lang: "en" | "de") => (ms >= 3_600_000 ? `${fmtDec(ms / 3_600_000, lang)} h` : `${fmtInt(ms / 60_000, lang)} min`);
+const fmtMs = (ms: number, lang: Lang) => (ms >= 3_600_000 ? `${fmtDec(ms / 3_600_000, lang)} h` : `${fmtInt(ms / 60_000, lang)} min`);
 
-function Row({ it, type, mode, lang }: { it: TrendItem; type: "artist" | "track"; mode: "up" | "down" | "new"; lang: "en" | "de" }) {
+function Row({ it, type, mode, lang }: { it: TrendItem; type: "artist" | "track"; mode: "up" | "down" | "new"; lang: Lang }) {
   const { t } = useStatify();
   const ratio = it.prev > 0 ? it.recent / it.prev : 0;
   const badge = mode === "up" ? `▲ ${fmtDec(ratio, lang)}×` : mode === "down" ? `▼ ${fmtInt((1 - ratio) * 100, lang)} %` : "★";
@@ -39,7 +40,7 @@ function Row({ it, type, mode, lang }: { it: TrendItem; type: "artist" | "track"
   );
 }
 
-function Section({ title, items, type, mode, lang }: { title: string; items: TrendItem[]; type: "artist" | "track"; mode: "up" | "down" | "new"; lang: "en" | "de" }) {
+function Section({ title, items, type, mode, lang }: { title: string; items: TrendItem[]; type: "artist" | "track"; mode: "up" | "down" | "new"; lang: Lang }) {
   const { t } = useStatify();
   return (
     <section className="card min-w-0 p-4">
@@ -51,7 +52,7 @@ function Section({ title, items, type, mode, lang }: { title: string; items: Tre
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-muted">{t("trNone")}</p>
+        <EmptyHint>{t("trNone")}</EmptyHint>
       )}
     </section>
   );

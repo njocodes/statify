@@ -63,7 +63,7 @@ export function SearchBox() {
         className="w-full rounded-full border border-line bg-surface px-3 py-1.5 text-sm placeholder:text-muted focus:border-accentdim focus:outline-none"
       />
       {open && hits.length > 0 && (
-        <ul className="card absolute right-0 top-full z-30 mt-2 max-h-[70dvh] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto p-1">
+        <ul className="absolute right-0 top-full z-30 mt-2 max-h-[70dvh] w-[min(22rem,calc(100vw-2rem))] overflow-y-auto rounded-2xl border border-line bg-surface p-1 shadow-xl">
           {hits.map((h) => (
             <li key={h.type + h.id}>
               <Link

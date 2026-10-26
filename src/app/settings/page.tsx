@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useStatify } from "@/lib/store/StatifyProvider";
-import { GENRES, THEME_IDS, THEME_LABEL, type ThemeId } from "@/lib/theme/themes";
+import { GENRES, THEME_IDS, themeName, themeBlurb, type ThemeId } from "@/lib/theme/themes";
 import { Segmented } from "@/components/Segmented";
 import { Mascot } from "@/components/Mascot";
 
@@ -39,7 +39,7 @@ export default function Settings() {
           <input type="radio" name="theme" checked={settings.theme === "auto"} onChange={() => setSettings({ theme: "auto" })} className="mt-1.5 accent-[var(--accent)]" />
           <span>
             <span className="display text-xl">{t("designAuto")}</span>
-            <span className="block text-sm text-muted">{hasData ? `${t("designAutoSub")} → ${THEME_LABEL[autoTheme][lang]}` : t("designNoData")}</span>
+            <span className="block text-sm text-muted">{hasData ? `${t("designAutoSub")} → ${themeName(autoTheme)}` : t("designNoData")}</span>
           </span>
         </label>
         {hasData && top.length > 0 && (
@@ -152,6 +152,10 @@ export default function Settings() {
           <div className="text-sm text-muted">{t("textSize")}</div>
           <Segmented label={t("textSize")} value={settings.textSize} onChange={(v) => setSettings({ textSize: v })} options={[["normal", "A"], ["large", "A+"], ["xl", "A++"]]} />
         </div>
+        <div className="space-y-1.5">
+          <div className="text-sm text-muted">{t("density")}</div>
+          <Segmented label={t("density")} value={settings.density} onChange={(v) => setSettings({ density: v })} options={[["comfortable", t("densityComfortable")], ["compact", t("densityCompact")]]} />
+        </div>
         <label className="flex cursor-pointer items-start gap-3">
           <input type="checkbox" checked={settings.reduceMotion} onChange={(e) => setSettings({ reduceMotion: e.target.checked })} className="mt-1 accent-[var(--accent)]" />
           <span className="text-sm">
@@ -180,8 +184,8 @@ export default function Settings() {
                 <Preview id={id} />
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <div className="display text-lg leading-tight">{THEME_LABEL[id][lang]}</div>
-                    <div className="text-xs text-muted">{THEME_LABEL[id].blurb[lang]}</div>
+                    <div className="display text-lg leading-tight">{themeName(id)}</div>
+                    <div className="text-xs text-muted">{themeBlurb(id, lang)}</div>
                   </div>
                   {theme === id && <span className="rounded-full bg-accent px-2 py-0.5 text-xs text-onaccent">{t("designActive")}</span>}
                 </div>

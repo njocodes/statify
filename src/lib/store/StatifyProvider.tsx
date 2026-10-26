@@ -8,7 +8,7 @@ import type { Detail, EntityType, SearchHit } from "../stats/detail";
 import { dominantGenre, hatOf, moodOf, secondaryGenre, type GenreMix, type Hat, type Mood } from "../theme/genres";
 import { GENRE_ACCENT_THEMES, GENRE_COLOR, GENRE_THEME, THEME_TONE, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
 import { accentOn, accentTokens, type Rgb } from "../theme/coverColor";
-import { dicts, type Key, type Lang } from "../i18n/dict";
+import { dicts, LANGS, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
 type IngestRes = Extract<Res, { type: "ingest" }>;
@@ -23,6 +23,7 @@ interface Settings {
   /** own accent colour (hex), wins over everything except the black/white clean theme */
   customAccent: string | null;
   textSize: "normal" | "large" | "xl";
+  density: "comfortable" | "compact";
   reduceMotion: boolean;
 }
 
@@ -69,7 +70,7 @@ export const useStatify = () => {
 };
 
 const defaultTz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto", accentMode: "classic", customAccent: null, textSize: "normal", reduceMotion: false });
+const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto", accentMode: "classic", customAccent: null, textSize: "normal", density: "comfortable", reduceMotion: false });
 
 export function StatifyProvider({ children }: { children: ReactNode }) {
   const worker = useRef<Worker | null>(null);
@@ -99,7 +100,9 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     try {
       stored = JSON.parse(localStorage.getItem("statify.settings") ?? "{}");
     } catch {}
-    const lang: Lang = stored.lang ?? (navigator.language.startsWith("de") ? "de" : "en");
+    const known = LANGS.map((l) => l.id);
+    const browser = known.find((l) => navigator.language.toLowerCase().startsWith(l));
+    const lang: Lang = known.includes(stored.lang as Lang) ? (stored.lang as Lang) : (browser ?? "en");
     const theme: ThemeSetting = stored.theme === "auto" || isThemeId(stored.theme) ? stored.theme : "auto";
     // Settings live in localStorage, so they can only be read after hydration.
     const legacy = (stored as { coverAccent?: boolean }).coverAccent;
@@ -107,7 +110,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     const customAccent = typeof stored.customAccent === "string" && /^#[0-9a-f]{6}$/i.test(stored.customAccent) ? stored.customAccent : null;
     const textSize = stored.textSize === "large" || stored.textSize === "xl" ? stored.textSize : "normal";
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme, accentMode, customAccent, textSize, reduceMotion: stored.reduceMotion === true });
+    setS({ density: stored.density === "compact" ? "compact" : "comfortable", lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme, accentMode, customAccent, textSize, reduceMotion: stored.reduceMotion === true });
     try {
       const c = JSON.parse(localStorage.getItem("statify.coverColor") ?? "null");
       if (c && typeof c.r === "number") setCoverColorState(c);
@@ -235,7 +238,9 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     el.style.fontSize = settings.textSize === "xl" ? "125%" : settings.textSize === "large" ? "112%" : "";
     if (settings.reduceMotion) el.dataset.motion = "reduced";
     else delete el.dataset.motion;
-  }, [settings.textSize, settings.reduceMotion]);
+    if (settings.density === "compact") el.dataset.density = "compact";
+    else delete el.dataset.density;
+  }, [settings.textSize, settings.reduceMotion, settings.density]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

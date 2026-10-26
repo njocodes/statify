@@ -1,4 +1,5 @@
 "use client";
+import { Mascot } from "@/components/Mascot";
 import { Dropzone } from "@/components/Dropzone";
 import { useStatify } from "@/lib/store/StatifyProvider";
 
@@ -7,6 +8,7 @@ export default function Home() {
   return (
     <div className="mx-auto max-w-2xl space-y-8 pt-6">
       <div className="space-y-3">
+        <Mascot size={72} />
         <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">{t("tagline")}</h1>
         <p className="text-muted">{t("privacy")}</p>
       </div>

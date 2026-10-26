@@ -1,4 +1,13 @@
-export type Lang = "de" | "en";
+import { es } from "./es";
+import { fr } from "./fr";
+
+export type Lang = "de" | "en" | "es" | "fr";
+export const LANGS: { id: Lang; label: string }[] = [
+  { id: "en", label: "English" },
+  { id: "de", label: "Deutsch" },
+  { id: "es", label: "Español" },
+  { id: "fr", label: "Français" },
+];
 
 const en = {
   tagline: "Your Spotify history, fully analysed. In your browser.",
@@ -186,6 +195,9 @@ const en = {
   accentOwn: "Own colour",
   accentReset: "Reset",
   comfortTitle: "Comfort",
+  density: "Density",
+  densityComfortable: "Comfortable",
+  densityCompact: "Compact",
   textSize: "Text size",
   reduceMotion: "Reduce motion",
   reduceMotionSub: "Turns off animations and transitions.",
@@ -416,6 +428,9 @@ const de: typeof en = {
   accentOwn: "Eigene Farbe",
   accentReset: "Zurücksetzen",
   comfortTitle: "Komfort",
+  density: "Dichte",
+  densityComfortable: "Luftig",
+  densityCompact: "Kompakt",
   textSize: "Schriftgröße",
   reduceMotion: "Bewegung reduzieren",
   reduceMotionSub: "Schaltet Animationen und Übergänge aus.",
@@ -460,7 +475,7 @@ const de: typeof en = {
   "reason_unexpected-exit": "App beendet", "reason_unexpected-exit-while-paused": "Pausiert beendet",
 };
 
-export const dicts = { en, de };
+export const dicts: Record<Lang, Record<Key, string>> = { en, de, es, fr };
 export type Key = keyof typeof en;
 /** Look up a dynamic key, falling back to the raw value. */
 export const maybeKey = (lang: Lang, k: string): string => (dicts[lang] as Record<string, string>)[k] ?? k;

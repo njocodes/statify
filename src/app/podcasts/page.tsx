@@ -1,4 +1,5 @@
 "use client";
+import { EmptyHint } from "@/components/EmptyHint";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { useView } from "@/lib/store/useView";
 import type { PodcastData } from "@/lib/stats/views";
@@ -19,7 +20,7 @@ export default function Podcasts() {
       {!data ? (
         <Skeleton />
       ) : data.episodes === 0 && data.video.entries === 0 ? (
-        <p className="text-muted">{t("noPodcasts")}</p>
+        <EmptyHint>{t("noPodcasts")}</EmptyHint>
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">

@@ -21,7 +21,7 @@ Upload the **Extended streaming history** you can request from Spotify and explo
 - **Wrapped**: a full-screen story per year or all time, exportable as an image
 - **Habits**: skip rates, most-skipped tracks, repeats, albums you listen to start to finish
 - **Backup**: save everything as one file (Settings) and load it on another device
-- Installable **PWA** that works offline, German and English, keyboard friendly, respects reduced motion
+- Installable **PWA** that works offline, English, German, Spanish and French, comfortable or compact density, keyboard friendly, respects reduced motion
 
 ## Privacy
 

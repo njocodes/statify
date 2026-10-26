@@ -5,6 +5,7 @@ import { toPng } from "html-to-image";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { Cover } from "@/components/Cover";
 import { Mascot } from "@/components/Mascot";
+import type { Lang } from "@/lib/i18n/dict";
 import { PeriodPanel } from "@/components/PeriodPanel";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { useDashboard } from "@/lib/store/useDashboard";
@@ -62,7 +63,7 @@ function Huge({ n = 1, size = "clamp(4rem, 22vw, 8rem)", children }: { n?: numbe
 }
 const nameSize = (s: string) => (s.length > 22 ? "clamp(2.2rem, 11vw, 4rem)" : s.length > 12 ? "clamp(3rem, 15vw, 5.5rem)" : "clamp(4rem, 21vw, 7.5rem)");
 
-function Ranked({ items, by, lang, cover }: { items: TopItem[]; by: "plays" | "ms"; lang: "en" | "de"; cover?: boolean }) {
+function Ranked({ items, by, lang, cover }: { items: TopItem[]; by: "plays" | "ms"; lang: Lang; cover?: boolean }) {
   const max = items[0]?.[by] || 1;
   return (
     <ol className="w-full space-y-4">
@@ -84,7 +85,7 @@ function Ranked({ items, by, lang, cover }: { items: TopItem[]; by: "plays" | "m
   );
 }
 
-function HoursSlide({ h, plays, lang, t }: { h: number; plays: number; lang: "en" | "de"; t: (k: never) => string }) {
+function HoursSlide({ h, plays, lang, t }: { h: number; plays: number; lang: Lang; t: (k: never) => string }) {
   const n = useCountUp(h);
   return (
     <div className="flex h-full flex-col justify-center gap-5">

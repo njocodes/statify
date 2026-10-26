@@ -3,7 +3,7 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStatify } from "@/lib/store/StatifyProvider";
-import type { Key } from "@/lib/i18n/dict";
+import { LANGS, type Key } from "@/lib/i18n/dict";
 import { SearchBox } from "./SearchBox";
 import { Logo } from "./Logo";
 import { PeriodPanel } from "./PeriodPanel";
@@ -43,6 +43,7 @@ export function Nav() {
   const moreActive = more.some((i) => i.href === path);
   const [sheet, setSheet] = useState(false);
   const [panel, setPanel] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
 
   // Desktop: the sliding indicator follows the active link, measured so any label width works.
   const rail = useRef<HTMLElement>(null);
@@ -92,13 +93,39 @@ export function Nav() {
               {FILTER_ICON}
             </button>
           )}
-          <button
-            onClick={() => setSettings({ lang: settings.lang === "de" ? "en" : "de" })}
-            className="ml-auto shrink-0 rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg sm:ml-0"
-            aria-label="Language"
-          >
-            {settings.lang === "de" ? "EN" : "DE"}
-          </button>
+          <div className="relative ml-auto shrink-0 sm:ml-0">
+            <button
+              onClick={() => setLangOpen((o) => !o)}
+              aria-expanded={langOpen}
+              aria-haspopup="menu"
+              className="rounded-full border border-line px-3 py-1 text-xs uppercase text-muted hover:text-fg"
+              aria-label="Language"
+            >
+              {settings.lang}
+            </button>
+            {langOpen && (
+              <>
+                <button aria-label="Close" className="fixed inset-0 z-30 cursor-default" onClick={() => setLangOpen(false)} />
+                <ul role="menu" className="absolute right-0 top-full z-40 mt-2 w-36 rounded-2xl border border-line bg-surface p-1 shadow-xl">
+                  {LANGS.map((l) => (
+                    <li key={l.id} role="none">
+                      <button
+                        role="menuitemradio"
+                        aria-checked={settings.lang === l.id}
+                        onClick={() => {
+                          setSettings({ lang: l.id });
+                          setLangOpen(false);
+                        }}
+                        className={`w-full rounded-lg px-3 py-2 text-left text-sm hover:bg-surface2 ${settings.lang === l.id ? "font-semibold text-fg" : "text-muted"}`}
+                      >
+                        {l.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
         </div>
       </header>
 

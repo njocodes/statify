@@ -1,4 +1,5 @@
 "use client";
+import { EmptyHint } from "@/components/EmptyHint";
 import { useState } from "react";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { useView } from "@/lib/store/useView";
@@ -93,7 +94,7 @@ export default function Genres() {
       {!data ? (
         <Skeleton />
       ) : !shown.length ? (
-        <p className="text-muted">{t("gnNone")}</p>
+        <EmptyHint>{t("gnNone")}</EmptyHint>
       ) : (
         <>
           <section className="card space-y-3 p-4">
