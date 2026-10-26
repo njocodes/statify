@@ -47,26 +47,26 @@ export default function Dashboard() {
         <Skeleton />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
             <Stat
               label={t("hours")}
-              value={fmtInt(hours(data.overview.totalMs), L)}
+              count={hours(data.overview.totalMs)} format={(n) => fmtInt(n, L)}
               sub={`≈ ${fmtInt(hours(data.overview.totalMs) / 24, L)} ${t("days")} · ${fmtDec(hours(data.overview.totalMs) / 24 / DAYS_PER_MONTH, L)} ${t("months")}`}
             />
-            <Stat label={t("plays")} value={fmtInt(data.overview.plays, L)} />
-            <Stat label={t("tracks")} value={fmtInt(data.overview.uniqueTracks, L)} />
-            <Stat label={t("artists")} value={fmtInt(data.overview.uniqueArtists, L)} />
-            <Stat label={t("albums")} value={fmtInt(data.overview.uniqueAlbums, L)} />
-            <Stat label={t("activeDays")} value={fmtInt(data.overview.activeDays, L)} />
+            <Stat label={t("plays")} count={data.overview.plays} format={(n) => fmtInt(n, L)} />
+            <Stat label={t("tracks")} count={data.overview.uniqueTracks} format={(n) => fmtInt(n, L)} />
+            <Stat label={t("artists")} count={data.overview.uniqueArtists} format={(n) => fmtInt(n, L)} />
+            <Stat label={t("albums")} count={data.overview.uniqueAlbums} format={(n) => fmtInt(n, L)} />
+            <Stat label={t("activeDays")} count={data.overview.activeDays} format={(n) => fmtInt(n, L)} />
             <Stat label={t("avgDay")} value={`${fmtInt(data.overview.avgMsPerActiveDay / 60000, L)} ${t("min")}`} />
             <Stat label={t("streak")} value={`${data.streak.longest} ${t("days")}`} />
           </div>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-3">
             <TopList title={t("topTracks")} items={data.top.tracks} type="track" />
             <TopList title={t("topArtists")} items={data.top.artists} type="artist" />
             <TopList title={t("topAlbums")} items={data.top.albums} type="album" />
           </div>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
             <OnThisDay />
             <Milestones />
           </div>

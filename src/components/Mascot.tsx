@@ -23,12 +23,12 @@ export function Mascot({ size = 140, className = "", look }: { size?: number; cl
         {mood === "sleepy" ? (
           <path d="M52 84q10 8 20 0M88 84q10 8 20 0" />
         ) : (
-          <>
+          <g className="blink">
             <ellipse cx="62" cy="82" rx="9" ry="12" fill="var(--surface)" />
             <ellipse cx="98" cy="82" rx="9" ry="12" fill="var(--surface)" />
             <circle cx="65" cy="85" r="3.5" fill="var(--ink)" stroke="none" />
             <circle cx="101" cy="85" r="3.5" fill="var(--ink)" stroke="none" />
-          </>
+          </g>
         )}
         {/* brows + mouth */}
         {mood === "grumpy" ? (
