@@ -43,7 +43,7 @@ export default function Discovery() {
           )}
           <section className="card p-4">
             <h2 className="mb-3 font-semibold">{t("monthlyTop")}</h2>
-            <ul className="grid gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2 lg:grid-cols-3">
               {[...data.monthlyTop].reverse().map((m) => (
                 <li key={m.month} className="flex justify-between gap-2">
                   <span className="text-muted">{m.month}</span>
@@ -54,7 +54,7 @@ export default function Discovery() {
               ))}
             </ul>
           </section>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <section className="card p-4">
               <h2 className="mb-3 font-semibold">{t("discoveries")}</h2>
               <ol className="space-y-1 text-sm">

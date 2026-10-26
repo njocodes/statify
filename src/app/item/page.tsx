@@ -65,7 +65,7 @@ function Item() {
         <h2 className="font-semibold">{t("perMonth")}</h2>
         <MonthChart months={d.months} />
       </section>
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {d.topTracks.length > 0 && <TopList title={t("topTracks")} items={{ plays: d.topTracks, ms: [...d.topTracks].sort((a, b) => b.ms - a.ms) }} type="track" />}
         {d.topAlbums.length > 0 && <TopList title={t("topAlbums")} items={{ plays: d.topAlbums, ms: [...d.topAlbums].sort((a, b) => b.ms - a.ms) }} type="album" />}
       </div>

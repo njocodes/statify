@@ -43,7 +43,7 @@ export default function Patterns() {
             <h2 className="font-semibold">{t("calendar")}</h2>
             <CalendarHeatmap days={data.days} />
           </section>
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <Stat label={t("sessions")} value={fmtInt(data.sessions.count, L)} />
             <Stat
               label={t("longestSession")}

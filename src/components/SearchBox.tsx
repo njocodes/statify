@@ -31,7 +31,7 @@ export function SearchBox() {
   }, []);
 
   return (
-    <div ref={box} className="relative w-36 sm:w-64">
+    <div ref={box} className="relative min-w-0 flex-1 sm:w-64 sm:flex-none">
       <input
         value={q}
         onChange={(e) => {

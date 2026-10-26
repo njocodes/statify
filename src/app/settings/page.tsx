@@ -60,7 +60,7 @@ export default function Settings() {
           <h2 className="text-xl">{t("designManual")}</h2>
           <p className="text-sm text-muted">{t("designManualSub")}</p>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {THEME_IDS.map((id) => {
             const selected = settings.theme === id;
             return (

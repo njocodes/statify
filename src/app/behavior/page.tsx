@@ -38,7 +38,7 @@ export default function Behavior() {
               ))}
             </div>
           </section>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <DistList title={t("startReasons")} items={data.startReasons} reasons />
             <DistList title={t("endReasons")} items={data.endReasons} reasons />
             <DistList title={t("platforms")} items={data.platforms} />

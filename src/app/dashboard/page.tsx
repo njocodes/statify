@@ -43,7 +43,7 @@ export default function Dashboard() {
             <Stat label={t("avgDay")} value={`${fmtInt(data.overview.avgMsPerActiveDay / 60000, L)} ${t("min")}`} />
             <Stat label={t("streak")} value={`${data.streak.longest} ${t("days")}`} />
           </div>
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <TopList title={t("topTracks")} items={data.top.tracks} type="track" />
             <TopList title={t("topArtists")} items={data.top.artists} type="artist" />
             <TopList title={t("topAlbums")} items={data.top.albums} type="album" />

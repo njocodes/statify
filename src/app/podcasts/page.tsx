@@ -25,7 +25,7 @@ export default function Podcasts() {
             <Stat label={t("episodes")} value={fmtInt(data.episodes, settings.lang)} sub={fmtDuration(data.ms)} />
             <Stat label={t("video")} value={fmtInt(data.video.entries, settings.lang)} sub={fmtDuration(data.video.ms)} />
           </div>
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {data.shows.plays.length > 0 && <TopList title={t("shows")} items={data.shows} type="artist" />}
             {data.items.plays.length > 0 && <TopList title={t("episodeList")} items={data.items} type="track" />}
           </div>

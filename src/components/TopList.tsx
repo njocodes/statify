@@ -14,8 +14,8 @@ export function TopList({ title, items, type }: { title: string; items: Record<"
   const list = items[by].slice(0, n);
   const max = list[0]?.[by] || 1;
   return (
-    <section className="card p-4">
-      <div className="mb-3 flex items-center justify-between gap-2">
+    <section className="card min-w-0 p-4">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="font-semibold">{title}</h2>
         <div className="flex rounded-full bg-surface2 p-0.5 text-xs">
           {(["plays", "ms"] as const).map((k) => (
