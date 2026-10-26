@@ -27,19 +27,25 @@ export function TopList({ title, items, type }: { title: string; items: Record<"
       </div>
       <ol className="space-y-2">
         {list.map((it, i) => (
-          <li key={it.key} className="flex items-center gap-3">
-            <span className="w-5 text-right text-xs text-muted">{i + 1}</span>
-            <Cover uri={it.uri} label={it.title} />
-            <div className="min-w-0 flex-1">
-              <Link href={`/item/?type=${type}&id=${encodeURIComponent(it.key)}`} className="block truncate text-sm font-medium hover:text-accent">{it.title || "–"}</Link>
-              {it.subtitle && <div className="truncate text-xs text-muted">{it.subtitle}</div>}
-              <div className="mt-1 h-1 rounded-full bg-surface2">
-                <div className="h-1 rounded-full bg-accent" style={{ width: `${(it[by] / max) * 100}%` }} />
+          <li key={it.key}>
+            {/* the whole row is the tap target, so it works comfortably on phones */}
+            <Link
+              href={`/item/?type=${type}&id=${encodeURIComponent(it.key)}`}
+              className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-1 hover:bg-surface2 active:bg-surface2"
+            >
+              <span className="w-5 text-right text-xs text-muted">{i + 1}</span>
+              <Cover uri={it.uri} label={it.title} />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium group-hover:text-accent">{it.title || "–"}</div>
+                {it.subtitle && <div className="truncate text-xs text-muted">{it.subtitle}</div>}
+                <div className="mt-1 h-1 rounded-full bg-surface2 group-hover:bg-surface">
+                  <div className="h-1 rounded-full bg-accent" style={{ width: `${(it[by] / max) * 100}%` }} />
+                </div>
               </div>
-            </div>
-            <div className="shrink-0 text-right text-xs text-muted">
-              {by === "plays" ? `${fmtInt(it.plays, settings.lang)}×` : `${fmtInt(it.ms / 60000, settings.lang)} ${t("min")}`}
-            </div>
+              <div className="shrink-0 text-right text-xs text-muted">
+                {by === "plays" ? `${fmtInt(it.plays, settings.lang)}×` : `${fmtInt(it.ms / 60000, settings.lang)} ${t("min")}`}
+              </div>
+            </Link>
           </li>
         ))}
       </ol>
