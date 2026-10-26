@@ -44,7 +44,7 @@
   --border: #111111;
   --fg: #111111;
   --muted: #4a4a4a;
-  --accent: #e8222e;
+  --accent: #d91f2b;
   --accent-dim: #b5121c;
   --on-accent: #ffffff;
   --ink: #111111;
@@ -164,7 +164,7 @@
   --muted: #b8a88c;
   --accent: #e8541e;
   --accent-dim: #b53f12;
-  --on-accent: #ffffff;
+  --on-accent: #1b1410;
   --ink: #f1e6c8;
   --bw: 2px;
   --radius: 8px;
@@ -287,10 +287,10 @@
   --surface-2: #ffe0f0;
   --border: #0b3d91;
   --fg: #0b3d91;
-  --muted: #5d6fa3;
+  --muted: #4f6196;
   --accent: #ff48b0;
   --accent-dim: #d92b93;
-  --on-accent: #0b2a6b;
+  --on-accent: #08205a;
   --ink: #0b3d91;
   --bw: 2px;
   --radius: 6px;
@@ -321,7 +321,7 @@
   --surface-2: #e6d9bc;
   --border: #0b2a5b;
   --fg: #0b2a5b;
-  --muted: #5b6b8c;
+  --muted: #4f5f80;
   --accent: #f28c28;
   --accent-dim: #c46d12;
   --on-accent: #0b2a5b;
@@ -434,7 +434,7 @@
   --surface-2: #e3cd96;
   --border: #3b2412;
   --fg: #3b2412;
-  --muted: #7a5a3a;
+  --muted: #6f512f;
   --accent: #a4331a;
   --accent-dim: #7c2410;
   --on-accent: #f4e6bf;
@@ -482,8 +482,8 @@
   --surface-2: #d8efff;
   --border: #ffffff;
   --fg: #123a63;
-  --muted: #5d7fa3;
-  --accent: #1c9be6;
+  --muted: #3f628a;
+  --accent: #0b7bc4;
   --accent-dim: #0f78b8;
   --on-accent: #ffffff;
   --ink: #3b6a99;
@@ -644,7 +644,7 @@
   --surface-2: #f3f3f3;
   --border: #e6e6e6;
   --fg: #0a0a0a;
-  --muted: #7a7a7a;
+  --muted: #6b6b6b;
   --accent: #0a0a0a;
   --accent-dim: #3a3a3a;
   --on-accent: #ffffff;
@@ -850,4 +850,13 @@ button:active { transform: scale(0.96); transition-duration: 0.05s; }
   input, select, textarea {
     font-size: 16px !important;
   }
+}
+
+/* keyboard focus: a clear ring in the accent colour on every theme */
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+.bg-accent:focus-visible {
+  outline-color: var(--fg);
 }

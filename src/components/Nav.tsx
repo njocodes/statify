@@ -58,6 +58,9 @@ export function Nav() {
 
   return (
     <>
+      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[80] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:text-onaccent">
+        {t("skip")}
+      </a>
       <header className="sticky top-0 z-20 border-b border-line bg-bg/80 backdrop-blur" style={{ paddingTop: "env(safe-area-inset-top)" }}>
         <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
           <Link href={hasData ? "/dashboard/" : "/"} className="shrink-0" aria-label="Statify"><Logo /></Link>
@@ -68,6 +71,7 @@ export function Nav() {
                 key={i.href}
                 href={i.href}
                 data-href={i.href}
+                aria-current={path === i.href ? "page" : undefined}
                 className={`relative z-10 whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition-[color,transform] duration-150 active:scale-95 ${path === i.href ? "text-onaccent" : "text-muted hover:text-fg"}`}
               >
                 {t(i.key)}
@@ -92,13 +96,13 @@ export function Nav() {
       </header>
 
       {/* phone tab bar */}
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 px-4 sm:hidden" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 flex flex-col items-center gap-2 px-4 sm:hidden" style={{ paddingBottom: "max(0.5rem, calc(env(safe-area-inset-bottom) - 1.5rem))" }}>
         {sheet && (
           <>
             <button aria-label="Close" className="pointer-events-auto fixed inset-0 -z-10 cursor-default" onClick={() => setSheet(false)} />
             <div className="pointer-events-auto page-in grid w-full grid-cols-3 gap-1 self-end rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "19rem" }}>
               {more.map((i) => (
-                <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-3 text-xs active:scale-95 ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
+                <Link key={i.href} href={i.href} aria-current={path === i.href ? "page" : undefined} onClick={() => setSheet(false)} className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-3 text-xs active:scale-95 ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
                   {i.icon}
                   {t(i.key)}
                 </Link>
@@ -113,7 +117,7 @@ export function Nav() {
         <nav className="pointer-events-auto relative grid w-full max-w-sm rounded-full border border-line bg-surface/90 p-1 shadow-lg backdrop-blur-xl" style={{ gridTemplateColumns: `repeat(${slots}, 1fr)` }}>
           {active >= 0 && <span aria-hidden className={`absolute bottom-1 left-1 top-1 rounded-full bg-accent ${slide}`} style={{ width: `calc((100% - 0.5rem) / ${slots})`, transform: `translateX(${active * 100}%)` }} />}
           {tabs.map((i) => (
-            <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`relative z-10 flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium transition-[color,transform] active:scale-90 ${path === i.href ? "text-onaccent" : "text-muted"}`}>
+            <Link key={i.href} href={i.href} aria-current={path === i.href ? "page" : undefined} onClick={() => setSheet(false)} className={`relative z-10 flex flex-col items-center gap-0.5 rounded-full py-1.5 text-[10px] font-medium transition-[color,transform] active:scale-90 ${path === i.href ? "text-onaccent" : "text-muted"}`}>
               {i.icon}
               {t(i.key)}
             </Link>

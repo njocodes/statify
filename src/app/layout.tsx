@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <PullToRefresh />
         <StatifyProvider>
           <Nav />
-          <main className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 sm:pb-24">{children}</main>
+          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 outline-none sm:pb-24">{children}</main>
         </StatifyProvider>
       </body>
     </html>

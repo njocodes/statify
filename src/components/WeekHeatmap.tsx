@@ -11,7 +11,7 @@ export function WeekHeatmap({ grid }: { grid: number[][] }) {
   return (
     <div ref={box} className="relative">
       {node}
-      <div className="grid gap-[2px]" style={{ gridTemplateColumns: "1.5rem repeat(24, minmax(0, 1fr))" }}>
+      <div role="img" aria-label={t("nav_patterns")} className="grid gap-[2px]" style={{ gridTemplateColumns: "1.5rem repeat(24, minmax(0, 1fr))" }}>
         <div />
         {Array.from({ length: 24 }, (_, h) => (
           <div key={h} className="text-center text-[9px] leading-none text-muted">
