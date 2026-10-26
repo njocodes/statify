@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { SearchBox } from "./SearchBox";
+import { Logo } from "./Logo";
 
 export function Nav() {
   const { t, settings, setSettings, extent } = useStatify();
@@ -11,13 +12,12 @@ export function Nav() {
   const items = [
     ...(hasData ? [{ href: "/dashboard/", label: t("nav_dashboard") }, { href: "/patterns/", label: t("nav_patterns") }, { href: "/behavior/", label: t("nav_behavior") }, { href: "/discovery/", label: t("nav_discovery") }, { href: "/podcasts/", label: t("nav_podcasts") }] : []),
     { href: "/", label: t("nav_upload") },
+    { href: "/settings/", label: t("nav_settings") },
   ];
   return (
     <header className="sticky top-0 z-20 border-b border-line bg-bg/80 backdrop-blur" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <div className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3">
-        <Link href="/" className="text-lg font-bold tracking-tight">
-          Stat<span className="text-accent">ify</span>
-        </Link>
+        <Link href="/" className="shrink-0"><Logo /></Link>
         <nav className="flex flex-1 gap-1 overflow-x-auto">
           {items.map((i) => (
             <Link

@@ -4,7 +4,7 @@ import { useStatify } from "@/lib/store/StatifyProvider";
 export function FilterBar({ year, setYear, years }: { year: number | null; setYear: (y: number | null) => void; years: number[] }) {
   const { t, settings, setSettings } = useStatify();
   const chip = (active: boolean) =>
-    `whitespace-nowrap rounded-full px-3 py-1.5 text-sm ${active ? "bg-accent text-black font-semibold" : "bg-surface text-muted hover:text-fg"}`;
+    `whitespace-nowrap rounded-full px-3 py-1.5 text-sm ${active ? "bg-accent text-onaccent font-semibold" : "bg-surface text-muted hover:text-fg"}`;
   return (
     <div className="space-y-3">
       <div className="flex gap-2 overflow-x-auto pb-1">

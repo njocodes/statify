@@ -5,6 +5,7 @@ import { appendPlays, clearAll, loadPlays } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
+import { genreOf, type GenreMix } from "../theme/genres";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
 export type ViewData = BehaviorData | DiscoveryData | PodcastData;
@@ -16,6 +17,7 @@ export type Req =
   | { id: number; type: "dashboard"; filter: Filter; tz: string }
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
   | { id: number; type: "search"; q: string; filter: Filter }
+  | { id: number; type: "genres" }
   | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts"; filter: Filter };
 
 export type Res =
@@ -34,6 +36,7 @@ export type Res =
   | { id: number; ok: true; type: "dashboard"; data: DashboardData }
   | { id: number; ok: true; type: "detail"; data: Detail | null }
   | { id: number; ok: true; type: "search"; hits: SearchHit[] }
+  | { id: number; ok: true; type: "genres"; mix: GenreMix }
   | { id: number; ok: true; type: "view"; data: ViewData }
   | { id: number; ok: false; error: string }
   | { id: -1; progress: { done: number; total: number } };
@@ -108,6 +111,22 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       case "view": {
         const fn = { behavior, discovery, podcasts }[r.view];
         post({ id: r.id, ok: true, type: "view", data: fn(plays, r.filter) });
+        break;
+      }
+      case "genres": {
+        const mix: GenreMix = { byGenre: {}, matchedMs: 0, totalMs: 0 };
+        const cache = new Map<string, ReturnType<typeof genreOf>>();
+        for (const p of plays) {
+          if (p.kind !== "track") continue;
+          mix.totalMs += p.ms;
+          let g = cache.get(p.artist);
+          if (g === undefined) cache.set(p.artist, (g = genreOf(p.artist)));
+          if (g) {
+            mix.byGenre[g] = (mix.byGenre[g] ?? 0) + p.ms;
+            mix.matchedMs += p.ms;
+          }
+        }
+        post({ id: r.id, ok: true, type: "genres", mix });
         break;
       }
       case "search": {

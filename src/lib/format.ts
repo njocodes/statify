@@ -1,4 +1,7 @@
 export const fmtInt = (n: number, lang = "de") => new Intl.NumberFormat(lang).format(Math.round(n));
+export const fmtDec = (n: number, lang = "de") => new Intl.NumberFormat(lang, { maximumFractionDigits: 1 }).format(n);
+/** Average month length, used to express listening time in months. */
+export const DAYS_PER_MONTH = 30.44;
 export const hours = (ms: number) => ms / 3.6e6;
 export function fmtDuration(ms: number): string {
   const m = Math.round(ms / 60000);

@@ -5,7 +5,7 @@ import { useDashboard } from "@/lib/store/useDashboard";
 import { FilterBar } from "@/components/FilterBar";
 import { Stat } from "@/components/Stat";
 import { TopList } from "@/components/TopList";
-import { fmtInt, hours } from "@/lib/format";
+import { DAYS_PER_MONTH, fmtDec, fmtInt, hours } from "@/lib/format";
 
 export default function Dashboard() {
   const { t, settings } = useStatify();
@@ -16,7 +16,7 @@ export default function Dashboard() {
     return (
       <div className="space-y-3 pt-10 text-center">
         <p className="text-muted">{t("noData")}</p>
-        <Link href="/" className="inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-black">
+        <Link href="/" className="inline-block rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-onaccent">
           {t("goUpload")}
         </Link>
       </div>
@@ -30,7 +30,11 @@ export default function Dashboard() {
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat label={t("hours")} value={fmtInt(hours(data.overview.totalMs), L)} />
+            <Stat
+              label={t("hours")}
+              value={fmtInt(hours(data.overview.totalMs), L)}
+              sub={`≈ ${fmtInt(hours(data.overview.totalMs) / 24, L)} ${t("days")} · ${fmtDec(hours(data.overview.totalMs) / 24 / DAYS_PER_MONTH, L)} ${t("months")}`}
+            />
             <Stat label={t("plays")} value={fmtInt(data.overview.plays, L)} />
             <Stat label={t("tracks")} value={fmtInt(data.overview.uniqueTracks, L)} />
             <Stat label={t("artists")} value={fmtInt(data.overview.uniqueArtists, L)} />

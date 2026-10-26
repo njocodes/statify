@@ -82,7 +82,7 @@ export function Dropzone() {
 
       {ready && extent?.first && (
         <div className="flex flex-wrap gap-3">
-          <Link href="/dashboard/" className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-black hover:bg-accentdim">
+          <Link href="/dashboard/" className="rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-onaccent hover:bg-accentdim">
             {t("openDashboard")}
           </Link>
           <button

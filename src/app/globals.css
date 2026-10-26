@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* ---------- design tokens (classic = default) ---------- */
 :root {
   --bg: #0b0d0c;
   --surface: #151a17;
@@ -9,6 +10,17 @@
   --muted: #93a39a;
   --accent: #1ed760;
   --accent-dim: #14a048;
+  --on-accent: #000000;
+  --ink: #eef3f0; /* outline colour for drawn elements */
+  --bw: 1px;
+  --radius: 16px;
+  --shadow: none;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
+  --display-weight: 700;
+  --display-tracking: -0.01em;
+  --tilt: 0deg;
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -20,25 +32,255 @@
   --color-muted: var(--muted);
   --color-accent: var(--accent);
   --color-accentdim: var(--accent-dim);
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --color-onaccent: var(--on-accent);
+  --font-sans: var(--font-body);
 }
 
-html {
+/* ---------- COMIC / POP-ART ---------- */
+[data-theme="comic"] {
+  --bg: #fff3b0;
+  --surface: #ffffff;
+  --surface-2: #ffd84d;
+  --border: #111111;
+  --fg: #111111;
+  --muted: #4a4a4a;
+  --accent: #e8222e;
+  --accent-dim: #b5121c;
+  --on-accent: #ffffff;
+  --ink: #111111;
+  --bw: 3px;
+  --radius: 10px;
+  --shadow: 5px 5px 0 #111111;
+  --font-body: var(--font-comic-neue), "Comic Sans MS", sans-serif;
+  --font-display: var(--font-bangers), Impact, sans-serif;
+  --display-weight: 400;
+  --display-tracking: 0.04em;
+  color-scheme: light;
+}
+[data-theme="comic"] body {
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, #f4a300 1.6px, transparent 1.8px);
+  background-size: 14px 14px;
+}
+
+/* ---------- GRAFFITI / STREET ---------- */
+[data-theme="graffiti"] {
+  --bg: #1c1a1d;
+  --surface: #2a272c;
+  --surface-2: #3a363d;
+  --border: #000000;
+  --fg: #f6f3ee;
+  --muted: #b3aab8;
+  --accent: #ffe600;
+  --accent-dim: #ccb800;
+  --on-accent: #111111;
+  --ink: #f6f3ee;
+  --bw: 3px;
+  --radius: 4px;
+  --shadow: 5px 5px 0 #ff2e93;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-marker), "Marker Felt", cursive;
+  --display-weight: 400;
+  --display-tracking: 0.02em;
+  --tilt: -0.5deg;
   color-scheme: dark;
+}
+[data-theme="graffiti"] body {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='48'><rect width='96' height='48' fill='%23201d21'/><g fill='none' stroke='%23121012' stroke-width='3'><path d='M0 0H96M0 24H96M0 48H96'/><path d='M0 0V24M48 24V48M96 0V24'/></g><g fill='%23ffffff' opacity='0.03'><rect x='4' y='4' width='40' height='16'/><rect x='52' y='28' width='40' height='16'/></g></svg>");
+}
+
+/* ---------- DOODLE / CARICATURE ---------- */
+[data-theme="doodle"] {
+  --bg: #fbf8ec;
+  --surface: #fffefa;
+  --surface-2: #e6efff;
+  --border: #25254a;
+  --fg: #25254a;
+  --muted: #62628a;
+  --accent: #2f5fe0;
+  --accent-dim: #1f45b3;
+  --on-accent: #ffffff;
+  --ink: #25254a;
+  --bw: 2.5px;
+  --radius: 14px;
+  --shadow: 3px 4px 0 rgba(37, 37, 74, 0.22);
+  --font-body: var(--font-patrick), "Segoe Print", cursive;
+  --font-display: var(--font-gochi), var(--font-patrick), cursive;
+  --display-weight: 400;
+  --display-tracking: 0.01em;
+  color-scheme: light;
+}
+[data-theme="doodle"] body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(70, 110, 220, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(70, 110, 220, 0.16) 1px, transparent 1px);
+  background-size: 26px 26px;
+  font-size: 1.06em;
+}
+[data-theme="doodle"] .card::before {
+  filter: url(#wobble);
+}
+
+/* ---------- PUNK COLLAGE / METAL ---------- */
+[data-theme="punk"] {
+  --bg: #d8d2c4;
+  --surface: #f1ede2;
+  --surface-2: #cfc8b8;
+  --border: #0d0d0d;
+  --fg: #0d0d0d;
+  --muted: #4c4840;
+  --accent: #d6001c;
+  --accent-dim: #9e0014;
+  --on-accent: #f1ede2;
+  --ink: #0d0d0d;
+  --bw: 3px;
+  --radius: 0px;
+  --shadow: 6px 6px 0 #0d0d0d;
+  --font-body: var(--font-elite), "Courier New", monospace;
+  --font-display: var(--font-fraktur), serif;
+  --display-weight: 700;
+  --display-tracking: 0;
+  --tilt: 0.45deg;
+  color-scheme: light;
+}
+[data-theme="punk"] body {
+  background-color: var(--bg);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.28 0'/></filter><rect width='220' height='220' filter='url(%23n)'/></svg>");
+}
+[data-theme="punk"] .card::before {
+  filter: url(#rough);
+}
+
+/* ---------- shared components ---------- */
+html {
   background: var(--bg);
 }
 
 body {
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--fg);
+  font-family: var(--font-body);
   min-height: 100dvh;
   overflow-x: hidden;
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
 }
 
+h1,
+h2,
+h3,
+.display {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+}
+
 .card {
+  position: relative;
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+/* hand-drawn outline: a second, filtered border layer on top (themes add the filter) */
+.card::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--bw) * -1);
+  border: var(--bw) solid var(--border);
+  border-radius: var(--radius);
+  pointer-events: none;
+  display: none;
+}
+[data-theme="doodle"] .card::before,
+[data-theme="punk"] .card::before {
+  display: block;
+}
+[data-theme="doodle"] .card,
+[data-theme="punk"] .card {
+  border-color: transparent;
+}
+
+/* slight alternating tilt makes grids feel pasted/sprayed on */
+@media (min-width: 640px) {
+  .card:nth-child(odd) {
+    transform: rotate(var(--tilt));
+  }
+  .card:nth-child(even) {
+    transform: rotate(calc(var(--tilt) * -0.8));
+  }
+}
+
+[data-theme="punk"] .card:nth-child(3n)::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 70px;
+  height: 20px;
+  transform: translateX(-50%) rotate(-3deg);
+  background: rgba(214, 170, 60, 0.7);
+  border: 1px dashed rgba(0, 0, 0, 0.25);
+}
+[data-theme="comic"] .card:nth-child(4n)::after {
+  content: "";
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  width: 46px;
+  height: 46px;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(232, 34, 46, 0.35) 2px, transparent 2.4px);
+  background-size: 8px 8px;
+}
+
+/* chips/buttons get the same ink outline in drawn themes */
+[data-theme]:not([data-theme="classic"]) button.rounded-full,
+[data-theme]:not([data-theme="classic"]) a.rounded-full {
+  border: 2px solid var(--ink);
+}
+[data-theme="punk"] .rounded-full,
+[data-theme="punk"] .rounded-md,
+[data-theme="punk"] input,
+[data-theme="punk"] select {
+  border-radius: 0 !important;
+}
+
+/* logo lettering */
+.logo span {
+  display: inline-block;
+}
+[data-theme="comic"] .logo {
+  text-shadow: 2px 2px 0 var(--ink);
+  -webkit-text-stroke: 1.5px var(--ink);
+  color: #fff;
+}
+[data-theme="graffiti"] .logo {
+  color: var(--accent);
+  text-shadow: 3px 3px 0 #ff2e93, 5px 5px 0 #000;
+  transform: rotate(-3deg);
+}
+[data-theme="doodle"] .logo span:nth-child(odd) {
+  transform: translateY(-2px) rotate(-4deg);
+}
+[data-theme="doodle"] .logo span:nth-child(even) {
+  transform: translateY(2px) rotate(3deg);
+}
+[data-theme="punk"] .logo span {
+  padding: 0 3px;
+  border: 2px solid #0d0d0d;
+  background: #f1ede2;
+  margin-right: 2px;
+}
+[data-theme="punk"] .logo span:nth-child(2n) {
+  background: #0d0d0d;
+  color: #f1ede2;
+  transform: rotate(-4deg);
+}
+[data-theme="punk"] .logo span:nth-child(3n) {
+  background: var(--accent);
+  color: #f1ede2;
+  transform: rotate(3deg);
 }

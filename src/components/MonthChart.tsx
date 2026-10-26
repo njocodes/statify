@@ -7,15 +7,15 @@ export function MonthChart({ months }: { months: { month: string; ms: number }[]
     <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data} margin={{ left: -20, right: 4, top: 4 }}>
-          <XAxis dataKey="month" tick={{ fill: "#93a39a", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: "#93a39a", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
           <Tooltip
             cursor={{ fill: "rgba(255,255,255,0.05)" }}
-            contentStyle={{ background: "#151a17", border: "1px solid #2a332e", borderRadius: 8, fontSize: 12 }}
+            contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }}
             formatter={(v) => [`${v} h`, ""]}
-            labelStyle={{ color: "#93a39a" }}
+            labelStyle={{ color: "var(--muted)" }}
           />
-          <Bar dataKey="h" fill="#1ed760" radius={[3, 3, 0, 0]} />
+          <Bar dataKey="h" fill="var(--accent)" radius={[3, 3, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>

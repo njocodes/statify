@@ -4,6 +4,8 @@ import type { Req, Res, ViewData } from "../worker/stats.worker";
 import type { Extent, DashboardData } from "../stats/query";
 import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
+import { dominantGenre, type GenreMix } from "../theme/genres";
+import { GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
 import { dicts, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
@@ -13,12 +15,17 @@ interface Settings {
   lang: Lang;
   tz: string;
   minPlayMs: number;
+  theme: ThemeSetting;
 }
 
 interface Ctx {
   ready: boolean;
   extent: Extent | null;
   settings: Settings;
+  /** the theme actually applied (resolved from "auto") */
+  theme: ThemeId;
+  autoTheme: ThemeId;
+  genreMix: GenreMix | null;
   setSettings: (s: Partial<Settings>) => void;
   t: (k: Key) => string;
   ingest: (files: File[], onProgress?: (done: number, total: number) => void) => Promise<IngestRes>;
@@ -37,7 +44,7 @@ export const useStatify = () => {
 };
 
 const defaultTz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS });
+const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto" });
 
 export function StatifyProvider({ children }: { children: ReactNode }) {
   const worker = useRef<Worker | null>(null);
@@ -47,6 +54,8 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [extent, setExtent] = useState<Extent | null>(null);
   const [settings, setS] = useState<Settings>(initialSettings);
+  const [autoTheme, setAutoTheme] = useState<ThemeId>("classic");
+  const [genreMix, setGenreMix] = useState<GenreMix | null>(null);
 
   const call = useCallback(<T extends Res>(req: DistributiveOmit<Req, "id">): Promise<T> => {
     return new Promise((resolve, reject) => {
@@ -62,9 +71,14 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       stored = JSON.parse(localStorage.getItem("statify.settings") ?? "{}");
     } catch {}
     const lang: Lang = stored.lang ?? (navigator.language.startsWith("de") ? "de" : "en");
+    const theme: ThemeSetting = stored.theme === "auto" || isThemeId(stored.theme) ? stored.theme : "auto";
     // Settings live in localStorage, so they can only be read after hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS });
+    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme });
+    try {
+      const cached = localStorage.getItem("statify.autoTheme");
+      if (isThemeId(cached)) setAutoTheme(cached);
+    } catch {}
 
     const w = new Worker(new URL("../worker/stats.worker.ts", import.meta.url));
     worker.current = w;
@@ -97,6 +111,39 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = settings.lang;
   }, [settings.lang]);
 
+  // Work out the "auto" theme from the listening history whenever the data changes.
+  useEffect(() => {
+    if (!ready || !extent) return;
+    if (!extent.first) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setGenreMix(null);
+      setAutoTheme("classic");
+      try {
+        localStorage.removeItem("statify.autoTheme");
+      } catch {}
+      return;
+    }
+    let off = false;
+    call<Extract<Res, { type: "genres" }>>({ type: "genres" }).then((r) => {
+      if (off) return;
+      const g = dominantGenre(r.mix);
+      const next = g ? GENRE_THEME[g] : "classic";
+      setGenreMix(r.mix);
+      setAutoTheme(next);
+      try {
+        localStorage.setItem("statify.autoTheme", next);
+      } catch {}
+    });
+    return () => {
+      off = true;
+    };
+  }, [ready, extent, call]);
+
+  const theme: ThemeId = settings.theme === "auto" ? autoTheme : settings.theme;
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
   const baseFilter: Filter = { from: null, to: null, minPlayMs: settings.minPlayMs, tz: settings.tz };
 
   const value = useMemo<Ctx>(
@@ -104,6 +151,9 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       ready,
       extent,
       settings,
+      theme,
+      autoTheme,
+      genreMix,
       setSettings,
       t: (k) => dicts[settings.lang][k],
       ingest: async (files, onProgress) => {
@@ -143,7 +193,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ready, extent, settings, setSettings, call],
+    [ready, extent, settings, theme, autoTheme, genreMix, setSettings, call],
   );
 
   return <C.Provider value={value}>{children}</C.Provider>;

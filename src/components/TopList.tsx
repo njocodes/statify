@@ -19,7 +19,7 @@ export function TopList({ title, items, type }: { title: string; items: Record<"
         <h2 className="font-semibold">{title}</h2>
         <div className="flex rounded-full bg-surface2 p-0.5 text-xs">
           {(["plays", "ms"] as const).map((k) => (
-            <button key={k} onClick={() => setBy(k)} className={`rounded-full px-3 py-1 ${by === k ? "bg-accent text-black" : "text-muted"}`}>
+            <button key={k} onClick={() => setBy(k)} className={`rounded-full px-3 py-1 ${by === k ? "bg-accent text-onaccent" : "text-muted"}`}>
               {k === "plays" ? t("byPlays") : t("byMinutes")}
             </button>
           ))}
