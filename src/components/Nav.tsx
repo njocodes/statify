@@ -96,14 +96,14 @@ export function Nav() {
         {sheet && (
           <>
             <button aria-label="Close" className="pointer-events-auto fixed inset-0 -z-10 cursor-default" onClick={() => setSheet(false)} />
-            <div className="pointer-events-auto page-in w-full max-w-sm self-end overflow-y-auto rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "11rem", maxHeight: "55dvh" }}>
+            <div className="pointer-events-auto page-in grid w-full grid-cols-3 gap-1 self-end rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "19rem" }}>
               {more.map((i) => (
-                <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm active:scale-[0.97] ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
+                <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`flex flex-col items-center gap-1 rounded-2xl px-1 py-3 text-xs active:scale-95 ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
                   {i.icon}
                   {t(i.key)}
                 </Link>
               ))}
-              <button onClick={() => { setSheet(false); setPanel(true); }} className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-fg active:scale-[0.97]">
+              <button onClick={() => { setSheet(false); setPanel(true); }} className="flex flex-col items-center gap-1 rounded-2xl px-1 py-3 text-xs text-fg active:scale-95">
                 {FILTER_ICON}
                 {t("period")}
               </button>
