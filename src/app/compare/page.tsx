@@ -6,6 +6,7 @@ import type { PeriodSummary } from "@/lib/stats/extras";
 import { yearStart, fmtDec, fmtInt } from "@/lib/format";
 import { GENRE_COLOR, GENRES } from "@/lib/theme/themes";
 import { EmptyNotice } from "@/components/EmptyNotice";
+import { ChartData } from "@/components/ChartData";
 import { ChartTooltip } from "@/components/ChartTooltip";
 import { Skeleton } from "@/components/Skeleton";
 
@@ -107,6 +108,7 @@ export default function Compare() {
         <>
           <section className="card space-y-2 p-4">
             <h2 className="font-semibold">{m.label}</h2>
+            <ChartData title={m.label} rows={rows.map((r) => [r.year, m.fmt(m.get(r.s))])} />
             <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chart} margin={{ left: -12, right: 4, top: 8 }}>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { genreFromTags, genreOf, setExtraGenre } from "../theme/genres";
+import { genreFromTags, genreOf, setExtraGenre, subGenreOf } from "../theme/genres";
 
 describe("MusicBrainz genre tags", () => {
   it("votes by tag count and maps to a genre", () => {
@@ -19,5 +19,12 @@ describe("MusicBrainz genre tags", () => {
     expect(genreOf("Bob Marley")).toBe("reggae");
     expect(genreOf("Bad Bunny")).toBe("latin");
     expect(genreOf("Wisin & Yandel")).toBe("latin");
+  });
+
+  it("splits reggae and latin into sub-genres", () => {
+    expect(subGenreOf("Sean Paul")).toEqual({ genre: "reggae", sub: "reggae_dancehall" });
+    expect(subGenreOf("Bob Marley")?.sub).toBe("reggae_roots");
+    expect(subGenreOf("Bad Bunny")?.sub).toBe("latin_reggaeton");
+    expect(subGenreOf("Marc Anthony")?.sub).toBe("latin_tropical");
   });
 });

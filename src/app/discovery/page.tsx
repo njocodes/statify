@@ -4,6 +4,7 @@ import { useStatify } from "@/lib/store/StatifyProvider";
 import { useView } from "@/lib/store/useView";
 import type { DiscoveryData } from "@/lib/stats/views";
 import { FilterBar } from "@/components/FilterBar";
+import { ChartData } from "@/components/ChartData";
 import { ChartTooltip } from "@/components/ChartTooltip";
 import { BumpChart } from "@/components/BumpChart";
 import { TopList } from "@/components/TopList";
@@ -27,6 +28,7 @@ export default function Discovery() {
           <section className="card space-y-3 p-4">
             <h2 className="font-semibold">{t("newArtists")}</h2>
             <div className="h-48">
+              <ChartData title={t("newArtists")} rows={data.newArtists.map((d) => [d.month, String(d.count)])} />
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.newArtists} margin={{ left: -20, right: 4, top: 4 }}>
                   <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
@@ -40,6 +42,7 @@ export default function Discovery() {
           <section className="card space-y-3 p-4">
             <h2 className="font-semibold">{t("dcNewShare")}</h2>
             <div className="h-48">
+              <ChartData title={t("dcNewShare")} rows={data.newShare.map((d) => [d.month, `${t("dcNew")} ${Math.round(d.newMs / 3.6e5) / 10} h, ${t("dcKnown")} ${Math.round(d.knownMs / 3.6e5) / 10} h`])} />
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.newShare.map((d) => ({ month: d.month, new: Math.round(d.newMs / 3.6e5) / 10, known: Math.round(d.knownMs / 3.6e5) / 10 }))} margin={{ left: -20, right: 4, top: 4 }}>
                   <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />

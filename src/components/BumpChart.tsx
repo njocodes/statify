@@ -1,5 +1,6 @@
 "use client";
 import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartData } from "./ChartData";
 import { ChartTooltip } from "./ChartTooltip";
 import type { DiscoveryData } from "@/lib/stats/views";
 
@@ -17,6 +18,7 @@ export function BumpChart({ data }: { data: DiscoveryData }) {
   });
   return (
     <div className="h-80 w-full">
+      <ChartData title="Top 10" rows={data.rankByYear.map((y) => [String(y.year), y.ranks.filter((x) => x.rank <= MAX_RANK).sort((a, b) => a.rank - b.rank).map((x) => `${x.rank}. ${x.artist}`).join(", ")])} />
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={rows} margin={{ left: -20, right: 12, top: 8 }}>
           <CartesianGrid stroke="var(--border)" vertical={false} />
