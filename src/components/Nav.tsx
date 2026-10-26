@@ -19,6 +19,7 @@ const DASH: Item = { href: "/dashboard/", key: "nav_dashboard", icon: svg("M4 4h
 const PATTERNS: Item = { href: "/patterns/", key: "nav_patterns", icon: svg("M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2") };
 const BEHAVIOR: Item = { href: "/behavior/", key: "nav_behavior", icon: svg("M5 5l9 7-9 7zM18 5v14") };
 const DISCOVERY: Item = { href: "/discovery/", key: "nav_discovery", icon: svg("M12 3a9 9 0 100 18 9 9 0 000-18zM15.5 8.5l-2 5-5 2 2-5z") };
+const WRAPPED: Item = { href: "/wrapped/", key: "nav_wrapped", icon: svg("M12 3l2.5 6 6.5.5-5 4.3 1.6 6.4L12 16.8 6.4 20.2 8 13.8 3 9.5 9.5 9z") };
 const PODCASTS: Item = { href: "/podcasts/", key: "nav_podcasts", icon: svg("M9 4a3 3 0 016 0v7a3 3 0 01-6 0zM5 11a7 7 0 0014 0M12 18v3") };
 const UPLOAD: Item = { href: "/", key: "nav_upload", icon: svg("M12 16V4M7 9l5-5 5 5M5 20h14") };
 const SETTINGS: Item = { href: "/settings/", key: "nav_settings", icon: svg("M12 3a9 9 0 100 18c1.5 0 2-1 1.4-2-.6-1 0-2.2 1.2-2.2H17a4 4 0 004-4c0-5-4-9.8-9-9.8zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01") };
@@ -29,10 +30,10 @@ export function Nav() {
   const { t, settings, setSettings, extent } = useStatify();
   const path = usePathname();
   const hasData = !!extent?.first;
-  const all = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY, PODCASTS, UPLOAD, SETTINGS] : [UPLOAD, SETTINGS];
+  const all = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY, PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [UPLOAD, SETTINGS];
   // Phone: four main tabs plus a "more" sheet, like a native tab bar.
   const tabs = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY] : [UPLOAD, SETTINGS];
-  const more = hasData ? [PODCASTS, UPLOAD, SETTINGS] : [];
+  const more = hasData ? [PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [];
   const moreActive = more.some((i) => i.href === path);
   const [sheet, setSheet] = useState(false);
 

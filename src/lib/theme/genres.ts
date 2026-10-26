@@ -63,6 +63,8 @@ export interface GenreMix {
   skipRate: number;
   /** share of listening time between 00:00 and 05:00 local time */
   nightShare: number;
+  /** the same numbers per calendar year, so every Wrapped year can get its own style */
+  yearly?: Record<string, GenreMix>;
 }
 
 const MIN_COVERAGE = 0.12;

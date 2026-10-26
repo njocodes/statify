@@ -6,7 +6,7 @@ import { dashboard, extent, type DashboardData, type Extent } from "../stats/que
 import type { Filter } from "../stats/core";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
 import { genreOf, type GenreMix } from "../theme/genres";
-import { parts } from "../stats/core";
+import { dayKey, parts } from "../stats/core";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
 export type ViewData = BehaviorData | DiscoveryData | PodcastData;
@@ -115,26 +115,36 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         break;
       }
       case "genres": {
-        const mix: GenreMix = { byGenre: {}, matchedMs: 0, totalMs: 0, skipRate: 0, nightShare: 0 };
-        let nightMs = 0;
-        let skipped = 0;
-        let tracks = 0;
+        type Acc = { mix: GenreMix; night: number; skipped: number; tracks: number };
+        const fresh = (): Acc => ({ mix: { byGenre: {}, matchedMs: 0, totalMs: 0, skipRate: 0, nightShare: 0 }, night: 0, skipped: 0, tracks: 0 });
+        const total = fresh();
+        const years = new Map<string, Acc>();
         const cache = new Map<string, ReturnType<typeof genreOf>>();
         for (const p of plays) {
           if (p.kind !== "track") continue;
-          mix.totalMs += p.ms;
-          tracks++;
-          if (p.skipped) skipped++;
-          if (parts(p.start, tz).h < 5) nightMs += p.ms;
+          const y = dayKey(p.start, tz).slice(0, 4);
+          const yearAcc = years.get(y) ?? years.set(y, fresh()).get(y)!;
+          const night = parts(p.start, tz).h < 5;
           let g = cache.get(p.artist);
           if (g === undefined) cache.set(p.artist, (g = genreOf(p.artist)));
-          if (g) {
-            mix.byGenre[g] = (mix.byGenre[g] ?? 0) + p.ms;
-            mix.matchedMs += p.ms;
+          for (const acc of [total, yearAcc]) {
+            acc.mix.totalMs += p.ms;
+            acc.tracks++;
+            if (p.skipped) acc.skipped++;
+            if (night) acc.night += p.ms;
+            if (g) {
+              acc.mix.byGenre[g] = (acc.mix.byGenre[g] ?? 0) + p.ms;
+              acc.mix.matchedMs += p.ms;
+            }
           }
         }
-        mix.skipRate = tracks ? skipped / tracks : 0;
-        mix.nightShare = mix.totalMs ? nightMs / mix.totalMs : 0;
+        const done = (acc: Acc): GenreMix => ({
+          ...acc.mix,
+          skipRate: acc.tracks ? acc.skipped / acc.tracks : 0,
+          nightShare: acc.mix.totalMs ? acc.night / acc.mix.totalMs : 0,
+        });
+        const mix = done(total);
+        mix.yearly = Object.fromEntries([...years].map(([y, acc]) => [y, done(acc)]));
         post({ id: r.id, ok: true, type: "genres", mix });
         break;
       }

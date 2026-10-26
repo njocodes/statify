@@ -1,14 +1,15 @@
 "use client";
 import { useStatify } from "@/lib/store/StatifyProvider";
+import type { Hat, Mood } from "@/lib/theme/genres";
 
 /**
  * "Statty": a headphone-wearing blob. One drawing, restyled per theme via CSS variables
  * (outline = --ink, body = --accent, cheeks = --surface-2) so every theme gets its own look.
  * Mood and hat come from the listening history (skip rate, night owl share, top genre).
  */
-export function Mascot({ size = 140, className = "" }: { size?: number; className?: string }) {
+export function Mascot({ size = 140, className = "", look }: { size?: number; className?: string; look?: { mood: Mood; hat: Hat } }) {
   const { mascot } = useStatify();
-  const { mood, hat } = mascot;
+  const { mood, hat } = look ?? mascot;
   return (
     <svg viewBox="0 0 160 160" width={size} height={size} className={className} role="img" aria-label="Statty">
       <g fill="none" stroke="var(--ink)" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
