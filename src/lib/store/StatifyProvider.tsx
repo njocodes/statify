@@ -6,8 +6,8 @@ import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
 import type { DayYear, Period, PeriodSummary } from "../stats/extras";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
 import { dominantGenre, hatOf, moodOf, secondaryGenre, type GenreMix, type Hat, type Mood } from "../theme/genres";
-import { GENRE_COLOR, GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
-import { accentTokens, type Rgb } from "../theme/coverColor";
+import { GENRE_ACCENT_THEMES, GENRE_COLOR, GENRE_THEME, THEME_TONE, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
+import { accentOn, accentTokens, type Rgb } from "../theme/coverColor";
 import { dicts, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
@@ -213,19 +213,22 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   }, [genreMix]);
 
   const theme: ThemeId = settings.theme === "auto" ? autoTheme : settings.theme;
-  // accent: own colour > cover colour (where allowed) > the theme's own; the clean theme stays strictly black/white
+  // accent: own colour > cover colour (where allowed) > the top genre's colour (genre themes) > the theme's own;
+  // the clean theme stays strictly black/white
   useEffect(() => {
     const root = document.documentElement.style;
     const names = ["--accent", "--accent-dim", "--on-accent"];
-    const fromCover = coverColor && (settings.accentMode === "all" || (settings.accentMode === "classic" && theme === "classic"));
-    const own = settings.customAccent ? { r: parseInt(settings.customAccent.slice(1, 3), 16), g: parseInt(settings.customAccent.slice(3, 5), 16), b: parseInt(settings.customAccent.slice(5, 7), 16) } : null;
-    const c = own ?? (fromCover ? coverColor : null);
-    if (!c || theme === "clean") return names.forEach((n) => root.removeProperty(n));
-    const k = accentTokens(c);
+    const hexRgb = (h: string): Rgb => ({ r: parseInt(h.slice(1, 3), 16), g: parseInt(h.slice(3, 5), 16), b: parseInt(h.slice(5, 7), 16) });
+    if (theme === "clean") return names.forEach((n) => root.removeProperty(n));
+    let k: ReturnType<typeof accentTokens> | null = null;
+    if (settings.customAccent) k = accentTokens(hexRgb(settings.customAccent));
+    else if (coverColor && (settings.accentMode === "all" || (settings.accentMode === "classic" && theme === "classic"))) k = accentTokens(coverColor);
+    else if (GENRE_ACCENT_THEMES.includes(theme) && genreMix && dominantGenre(genreMix)) k = accentOn(hexRgb(GENRE_COLOR[dominantGenre(genreMix)!]), THEME_TONE[theme]);
+    if (!k) return names.forEach((n) => root.removeProperty(n));
     root.setProperty("--accent", k.accent);
     root.setProperty("--accent-dim", k.dim);
     root.setProperty("--on-accent", k.on);
-  }, [coverColor, settings.accentMode, settings.customAccent, theme]);
+  }, [coverColor, settings.accentMode, settings.customAccent, theme, genreMix]);
 
   useEffect(() => {
     const el = document.documentElement;

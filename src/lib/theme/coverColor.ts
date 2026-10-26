@@ -98,3 +98,10 @@ export function accentTokens(c: Rgb) {
     on: luminance(c) > 0.55 ? "#111111" : "#ffffff",
   };
 }
+
+/** a genre colour tuned to its ground: darker on light themes, lighter on dark ones, so text in it stays readable */
+export function accentOn(c: Rgb, tone: "light" | "dark") {
+  const { h, s, l } = toHsl(c);
+  const tuned = tone === "light" ? fromHsl(h, Math.max(0.55, s), Math.min(l, 0.38)) : fromHsl(h, Math.max(0.5, s), Math.max(l, 0.58));
+  return accentTokens(tuned);
+}
