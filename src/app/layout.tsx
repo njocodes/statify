@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand, UnifrakturCook, Special_Elite } from "next/font/google";
+import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand, UnifrakturCook, Special_Elite, Caveat, Audiowide, Archivo_Black } from "next/font/google";
 import "./globals.css";
 import { StatifyProvider } from "@/lib/store/StatifyProvider";
 import { Nav } from "@/components/Nav";
@@ -13,6 +13,9 @@ const marker = Permanent_Marker({ subsets: ["latin"], preload: false, weight: "4
 const patrick = Patrick_Hand({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-patrick" });
 const gochi = Gochi_Hand({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-gochi" });
 const fraktur = UnifrakturCook({ subsets: ["latin"], preload: false, weight: "700", variable: "--font-fraktur" });
+const caveat = Caveat({ subsets: ["latin"], preload: false, weight: ["500", "700"], variable: "--font-caveat" });
+const audiowide = Audiowide({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-audiowide" });
+const archivo = Archivo_Black({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-archivo" });
 const elite = Special_Elite({ subsets: ["latin"], preload: false, weight: "400", variable: "--font-elite" });
 
 export const metadata: Metadata = {
@@ -26,7 +29,7 @@ export const viewport: Viewport = { viewportFit: "cover" };
 const themeScript = `try{var s=JSON.parse(localStorage.getItem('statify.settings')||'{}');var t=s.theme&&s.theme!=='auto'?s.theme:localStorage.getItem('statify.autoTheme');if(t)document.documentElement.dataset.theme=t}catch(e){}`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const fonts = [inter, bangers, comicNeue, marker, patrick, gochi, fraktur, elite].map((f) => f.variable).join(" ");
+  const fonts = [inter, bangers, comicNeue, marker, patrick, gochi, fraktur, elite, caveat, audiowide, archivo].map((f) => f.variable).join(" ");
   return (
     <html lang="en" className={fonts} data-theme="classic" suppressHydrationWarning>
       <head>

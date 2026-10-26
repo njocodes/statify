@@ -5,7 +5,7 @@ import { Mascot } from "./Mascot";
 /** Theme-specific drawn flourishes for the landing hero. Classic shows nothing. */
 export function HeroArt() {
   const { theme } = useStatify();
-  if (theme === "classic") return null;
+  if (theme === "classic" || theme === "clean") return null;
   return (
     <div className="relative mx-auto h-48 w-full max-w-md select-none" aria-hidden>
       <Mascot size={150} className="absolute left-1/2 top-2 -translate-x-1/2" />
@@ -32,6 +32,38 @@ export function HeroArt() {
           <path d="M22 18l5 12 13 1-10 8 4 13-12-7-12 7 4-13-10-8 13-1z" fill="var(--surface-2)" />
           <path d="M60 60c10-14 20 14 30 0s20 14 28 0" />
           <path d="M70 20c14 4 24 14 28 30M92 44l6 8 6-10" />
+        </svg>
+      )}
+      {theme === "cassette" && (
+        <svg viewBox="0 0 140 90" className="absolute right-0 top-2 w-32 rotate-6" fill="none" stroke="var(--ink)" strokeWidth="4" strokeLinejoin="round">
+          <rect x="6" y="10" width="128" height="72" rx="8" fill="#f1e6c8" />
+          <rect x="22" y="20" width="96" height="26" rx="4" fill="var(--accent)" />
+          <circle cx="46" cy="64" r="10" fill="#2b2622" />
+          <circle cx="94" cy="64" r="10" fill="#2b2622" />
+          <path d="M56 64h28" />
+          <path d="M30 33h40" stroke="#f1e6c8" />
+        </svg>
+      )}
+      {theme === "vaporwave" && (
+        <svg viewBox="0 0 140 90" className="absolute right-0 top-0 w-32">
+          <defs>
+            <linearGradient id="vw-sun" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#fff36b" />
+              <stop offset="1" stopColor="#ff5fa8" />
+            </linearGradient>
+          </defs>
+          <circle cx="70" cy="40" r="32" fill="url(#vw-sun)" />
+          <g stroke="#1a0b3d" strokeWidth="3">
+            <path d="M34 50h72M38 58h64M44 66h52" />
+          </g>
+          <path d="M10 80h120M30 72l-18 18M70 72v18M110 72l18 18" stroke="#01cdfe" strokeWidth="2" />
+        </svg>
+      )}
+      {theme === "riso" && (
+        <svg viewBox="0 0 140 90" className="absolute left-0 top-2 w-32" style={{ mixBlendMode: "multiply" }}>
+          <circle cx="44" cy="44" r="30" fill="#ff48b0" opacity="0.85" />
+          <circle cx="76" cy="44" r="30" fill="#0078bf" opacity="0.75" />
+          <circle cx="60" cy="62" r="24" fill="#ffe800" opacity="0.8" />
         </svg>
       )}
       {theme === "punk" && (

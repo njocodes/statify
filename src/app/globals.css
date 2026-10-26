@@ -153,6 +153,211 @@
   filter: url(#rough);
 }
 
+
+/* ---------- CASSETTE / AUDIO PLAY ---------- */
+[data-theme="cassette"] {
+  --bg: #241d19;
+  --surface: #3a3028;
+  --surface-2: #4a3d32;
+  --border: #2b2622;
+  --fg: #f1e6c8;
+  --muted: #b8a88c;
+  --accent: #e8541e;
+  --accent-dim: #b53f12;
+  --on-accent: #ffffff;
+  --ink: #f1e6c8;
+  --bw: 2px;
+  --radius: 8px;
+  --shadow: 4px 4px 0 #000000;
+  --font-body: var(--font-elite), "Courier New", monospace;
+  --font-display: var(--font-caveat), "Segoe Print", cursive;
+  --display-weight: 700;
+  --display-tracking: 0.01em;
+  --tilt: -0.3deg;
+  color-scheme: dark;
+}
+[data-theme="cassette"] body {
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 5px);
+}
+/* every card is a tape label: cream paper, coloured head strip with two reels */
+[data-theme="cassette"] .card {
+  --surface: #f1e6c8;
+  --surface-2: #e0d2ae;
+  --fg: #2b2622;
+  --muted: #6b5e50;
+  --ink: #2b2622;
+  color: var(--fg);
+  border-top-width: 22px;
+  border-top-color: var(--accent);
+}
+[data-theme="cassette"] .card:nth-child(3n + 2) {
+  border-top-color: #f2b632;
+}
+[data-theme="cassette"] .card:nth-child(3n) {
+  border-top-color: #2d8a8a;
+}
+[data-theme="cassette"] .card::after {
+  content: "";
+  position: absolute;
+  top: -20px;
+  right: 14px;
+  width: 58px;
+  height: 18px;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 9px 9px, #f1e6c8 0 6px, #2b2622 6px 8px, transparent 8px),
+    radial-gradient(circle at 49px 9px, #f1e6c8 0 6px, #2b2622 6px 8px, transparent 8px);
+}
+
+/* ---------- VAPORWAVE / SYNTHWAVE ---------- */
+[data-theme="vaporwave"] {
+  --bg: #1a0b3d;
+  --surface: #2a1260;
+  --surface-2: #3d1c85;
+  --border: #01cdfe;
+  --fg: #f4e9ff;
+  --muted: #b8a2e8;
+  --accent: #ff71ce;
+  --accent-dim: #d44fa8;
+  --on-accent: #1a0b3d;
+  --ink: #01cdfe;
+  --bw: 1.5px;
+  --radius: 6px;
+  --shadow: 0 0 18px rgba(255, 113, 206, 0.45), inset 0 0 14px rgba(1, 205, 254, 0.12);
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-audiowide), var(--font-inter), sans-serif;
+  --display-weight: 400;
+  --display-tracking: 0.05em;
+  color-scheme: dark;
+}
+[data-theme="vaporwave"] body {
+  isolation: isolate;
+  background: linear-gradient(180deg, #1a0b3d 0%, #3b1a78 42%, #c2418f 78%, #ff9a6b 100%) fixed;
+}
+/* perspective grid floor + low sun, both behind the content */
+[data-theme="vaporwave"] body::before {
+  content: "";
+  position: fixed;
+  left: -60%;
+  right: -60%;
+  bottom: 0;
+  height: 42vh;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(1, 205, 254, 0.55) 0 2px, transparent 2px 64px),
+    repeating-linear-gradient(0deg, rgba(1, 205, 254, 0.55) 0 2px, transparent 2px 42px);
+  transform: perspective(280px) rotateX(62deg);
+  transform-origin: bottom;
+  mask-image: linear-gradient(to top, #000 30%, transparent);
+}
+[data-theme="vaporwave"] body::after {
+  content: "";
+  position: fixed;
+  right: 9vw;
+  top: 16vh;
+  width: clamp(110px, 22vw, 220px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.55;
+  background: linear-gradient(180deg, #fff36b, #ff5fa8 70%);
+  mask-image: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px);
+  -webkit-mask-image: repeating-linear-gradient(180deg, #000 0 14px, transparent 14px 18px);
+}
+[data-theme="vaporwave"] .card {
+  background: rgba(26, 11, 61, 0.72);
+  backdrop-filter: blur(6px);
+}
+[data-theme="vaporwave"] .logo {
+  letter-spacing: 0.06em;
+  background: linear-gradient(90deg, #ff71ce, #01cdfe);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 8px rgba(255, 113, 206, 0.6));
+}
+
+/* ---------- RISOGRAPH ---------- */
+[data-theme="riso"] {
+  --bg: #f3eee3;
+  --surface: #fbf8f1;
+  --surface-2: #ffe0f0;
+  --border: #0b3d91;
+  --fg: #0b3d91;
+  --muted: #5d6fa3;
+  --accent: #ff48b0;
+  --accent-dim: #d92b93;
+  --on-accent: #0b2a6b;
+  --ink: #0b3d91;
+  --bw: 2px;
+  --radius: 6px;
+  --shadow: 5px 4px 0 #ff48b0;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-archivo), var(--font-inter), sans-serif;
+  --display-weight: 400;
+  --display-tracking: 0;
+  color-scheme: light;
+}
+[data-theme="riso"] body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, rgba(255, 72, 176, 0.28) 1.3px, transparent 1.5px),
+    radial-gradient(circle, rgba(0, 120, 191, 0.16) 1.3px, transparent 1.5px);
+  background-size: 10px 10px;
+  background-position: 0 0, 5px 5px;
+}
+[data-theme="riso"] .logo {
+  color: #ff48b0;
+  text-shadow: 2px 2px 0 #0b3d91;
+}
+
+/* ---------- CLEAN (follows the phone's light/dark setting) ---------- */
+[data-theme="clean"] {
+  --bg: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #f3f3f3;
+  --border: #e6e6e6;
+  --fg: #0a0a0a;
+  --muted: #7a7a7a;
+  --accent: #0a0a0a;
+  --accent-dim: #3a3a3a;
+  --on-accent: #ffffff;
+  --ink: #0a0a0a;
+  --bw: 1px;
+  --radius: 14px;
+  --shadow: none;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-inter), system-ui, sans-serif;
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  [data-theme="clean"] {
+    --bg: #000000;
+    --surface: #000000;
+    --surface-2: #161616;
+    --border: #262626;
+    --fg: #f5f5f5;
+    --muted: #8a8a8a;
+    --accent: #f5f5f5;
+    --accent-dim: #c9c9c9;
+    --on-accent: #000000;
+    --ink: #f5f5f5;
+  }
+}
+[data-theme="clean"] button.rounded-full,
+[data-theme="clean"] a.rounded-full {
+  border-width: 1px;
+  border-color: var(--border);
+}
+[data-theme="clean"] .logo {
+  letter-spacing: -0.03em;
+}
+
 /* ---------- shared components ---------- */
 html {
   background: var(--bg);
