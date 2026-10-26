@@ -17,7 +17,7 @@ Upload the **Extended streaming history** you can request from Spotify and explo
 - **Overview, patterns, behavior, discovery, podcasts** with a global period filter
 - **Trends** (what is rising, falling, coming back), **phases** and **milestones**, "on this day", period comparison
 - **Genres** with sub-genres, detected from a curated artist list; optional lookup of unknown artists on [MusicBrainz](https://musicbrainz.org)
-- **Drawn designs per genre** (15 themes, automatic or manual) with a mascot that reacts to your taste, and an accent colour taken from your album covers
+- **Drawn designs per genre** (17 themes, automatic or manual) with a mascot that reacts to your taste, and an accent colour from your album covers or your own, text size and reduced motion
 - **Wrapped**: a full-screen story per year or all time, exportable as an image
 - **Habits**: skip rates, most-skipped tracks, repeats, albums you listen to start to finish
 - **Backup**: save everything as one file (Settings) and load it on another device

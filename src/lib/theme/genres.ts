@@ -3,6 +3,9 @@ import type { Genre } from "./themes";
 // The Spotify export has no genre field, so a hand-curated artist list is the genre source.
 // Names are matched after normalize() (lowercase, no diacritics/punctuation).
 const LISTS: Record<Genre, string> = {
+  // reggae and latin come first so their specialists are not taken by the broader pop list
+  reggae: `bob marley;peter tosh;burning spear;damian marley;chronixx;protoje;sean paul;shaggy;shabba ranks;buju banton;beenie man;vybz kartel;popcaan;koffee;sizzla;capleton;seeed;gentleman;culcha candela;patrice;jah cure;alborosie;lee scratch perry;toots the maytals;ub40;steel pulse;dub inc;soldiers of jah army;stick figure;rebelution;groundation;collie buddz;barrington levy;dennis brown;gregory isaacs;jimmy cliff;eddy grant;inner circle;morgan heritage;stephen marley;ziggy marley;skip marley;kabaka pyramid;lila ike;spice;mavado;busy signal;demarco;tarrus riley;romain virgo;freddie mcgregor`,
+  latin: `bad bunny;j balvin;daddy yankee;ozuna;karol g;anuel aa;maluma;rauw alejandro;shakira;enrique iglesias;ricky martin;luis fonsi;nicky jam;myke towers;feid;sech;becky g;rosalia;jhay cortez;farruko;wisin yandel;wisin;yandel;don omar;tego calderon;marc anthony;romeo santos;aventura;prince royce;carlos vives;juanes;manu chao;gipsy kings;buena vista social club;celia cruz;willie colon;ruben blades;camilo;tini;c tangana;quevedo;bizarrap;peso pluma;natanael cano;junior h;grupo frontera;fuerza regida;eslabon armado;gloria estefan;mon laferte;morat;sebastian yatra;chino nacho;mora;eladio carrion;lunay;zion lennox;arcangel;de la ghetto;jowell randy;nio garcia;casper magico;darell;kevin roldan;blessd;ryan castro;young miko;ivy queen;pitbull;yandel;fonseca;paulina rubio;thalia;la oreja de van gogh;mana;cafe tacvba;los fabulosos cadillacs;soda stereo;enanitos verdes;gente de zona;el alfa;tokischa;rochy rd`,
   metal: `metallica;rammstein;system of a down;slipknot;iron maiden;black sabbath;ghost;sabaton;powerwolf;amon amarth;korn;ensiferum;in extremo;subway to sally;saltatio mortis;eisbrecher;oomph;nightwish;within temptation;epica;lacuna coil;motorhead;judas priest;slayer;megadeth;pantera;lamb of god;trivium;architects;parkway drive;fit for a king;spiritbox;sleep token;deftones;gojira;mastodon;heaven shall burn;avenged sevenfold;bullet for my valentine;volbeat;five finger death punch;disturbed;bring me the horizon;motionless in white;falling in reverse;asking alexandria;callejon;hatebreed;kreator;sodom;tankard;accept;helloween;blind guardian;gamma ray;dream theater;opeth;meshuggah;behemoth;dimmu borgir;cradle of filth;children of bodom;in flames;dark tranquillity;at the gates;arch enemy;lordi;alestorm;eluveitie;feuerschwanz;schandmaul;letzte instanz;rob zombie;marilyn manson;motley crue`,
   techno: `paul kalkbrenner;boris brejcha;charlotte de witte;amelie lens;adam beyer;nina kraviz;carl cox;solomun;tale of us;argy;anyma;dixon;monolink;kollektiv turmstrasse;lilly palmer;the prodigy;fisher;peggy gou;ben bohmer;yotto;lane 8;dj koze;maceo plex;richie hawtin;sven vath;robert hood;jeff mills;oliver koletzki;worakls;reinier zonneveld;fritz kalkbrenner;dubfire;adriatique;boys noize;ellen allien;apparat;modeselektor;moderat;scooter;kobosil;i hate models;enrico sangiuliano;indira paganotto;hot since 82;dj tennis`,
   folk: `bob dylan;simon garfunkel;leonard cohen;cat stevens;passenger;bon iver;fleet foxes;the lumineers;mumford sons;of monsters and men;hozier;ben howard;jose gonzalez;nick drake;iron wine;damien rice;the paper kites;lord huron;gregory alan isakov;the head and the heart;noah kahan;novo amor;dermot kennedy;ben harper;jack johnson;milky chance;philipp poisel;sufjan stevens;the tallest man on earth;kings of convenience;angus julia stone;john denver;woody guthrie;joan baez;joni mitchell;neil young;fleetwood mac;the civil wars;the avett brothers;first aid kit;daughter;birdy;seeed x`,
@@ -158,7 +161,7 @@ export function secondaryGenre(mix: GenreMix): Genre | null {
 }
 
 export type Mood = "happy" | "grumpy" | "sleepy";
-export type Hat = "none" | "cap" | "cowboy" | "beret" | "spikes";
+export type Hat = "none" | "cap" | "cowboy" | "beret" | "spikes" | "shades" | "crown" | "flower" | "beanie";
 
 export function moodOf(mix: GenreMix): Mood {
   if (mix.nightShare > 0.15) return "sleepy";
@@ -166,5 +169,5 @@ export function moodOf(mix: GenreMix): Mood {
   return "happy";
 }
 
-const HAT: Partial<Record<Genre, Hat>> = { rap: "cap", country: "cowboy", jazz: "beret", klassik: "beret", rock: "spikes", metal: "spikes" };
+const HAT: Partial<Record<Genre, Hat>> = { rap: "cap", country: "cowboy", jazz: "beret", klassik: "beret", rock: "spikes", metal: "spikes", pop: "crown", electronic: "shades", techno: "shades", indie: "flower", folk: "flower", reggae: "beanie", latin: "crown" };
 export const hatOf = (g: Genre | null): Hat => (g && HAT[g]) || "none";

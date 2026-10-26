@@ -53,6 +53,26 @@ export function Mascot({ size = 140, className = "", look }: { size?: number; cl
         {hat === "cowboy" && <path d="M22 36c20 8 96 8 116 0-6-6-14-6-20-8-2-14-10-20-38-20S44 14 42 28c-6 2-14 2-20 8z" fill="var(--surface-2)" />}
         {hat === "beret" && <path d="M40 34c0-14 20-22 44-20s42 12 34 22c-14 6-60 8-78-2z" fill="var(--ink)" />}
         {hat === "spikes" && <path d="M44 34l-6-20 18 12 8-20 14 18 14-18 8 20 18-12-6 20" fill="var(--ink)" strokeWidth="4" />}
+        {hat === "shades" && <path d="M40 74h36v18H40zM84 74h36v18H84zM76 80h8" fill="var(--ink)" strokeWidth="4" />}
+        {hat === "crown" && <path d="M48 36l-4-24 20 14 16-20 16 20 20-14-4 24z" fill="#ffd21f" strokeWidth="4" />}
+        {hat === "flower" && (
+          <>
+            <circle cx="116" cy="34" r="7" fill="var(--surface)" strokeWidth="3" />
+            <circle cx="116" cy="22" r="6" fill="#ff7ab8" strokeWidth="3" />
+            <circle cx="127" cy="30" r="6" fill="#ff7ab8" strokeWidth="3" />
+            <circle cx="123" cy="43" r="6" fill="#ff7ab8" strokeWidth="3" />
+            <circle cx="109" cy="43" r="6" fill="#ff7ab8" strokeWidth="3" />
+            <circle cx="105" cy="30" r="6" fill="#ff7ab8" strokeWidth="3" />
+            <circle cx="116" cy="34" r="5" fill="#ffd21f" strokeWidth="2.5" />
+          </>
+        )}
+        {hat === "beanie" && (
+          <>
+            <path d="M40 40c0-26 20-36 40-36s40 10 40 36z" fill="#e11d2e" strokeWidth="4" />
+            <path d="M40 40h80v8H40z" fill="#ffd21f" strokeWidth="4" />
+            <circle cx="80" cy="4" r="6" fill="#22a04a" strokeWidth="3" />
+          </>
+        )}
         {/* sound waves */}
         <path d="M8 90c-4 8-4 16 0 24M152 90c4 8 4 16 0 24" strokeWidth="4" />
       </g>

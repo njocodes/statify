@@ -18,7 +18,12 @@ interface Settings {
   tz: string;
   minPlayMs: number;
   theme: ThemeSetting;
-  coverAccent: boolean;
+  /** where the accent taken from album covers replaces the theme accent */
+  accentMode: "off" | "classic" | "all";
+  /** own accent colour (hex), wins over everything except the black/white clean theme */
+  customAccent: string | null;
+  textSize: "normal" | "large" | "xl";
+  reduceMotion: boolean;
 }
 
 interface Ctx {
@@ -64,7 +69,7 @@ export const useStatify = () => {
 };
 
 const defaultTz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto", coverAccent: true });
+const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto", accentMode: "classic", customAccent: null, textSize: "normal", reduceMotion: false });
 
 export function StatifyProvider({ children }: { children: ReactNode }) {
   const worker = useRef<Worker | null>(null);
@@ -97,8 +102,12 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     const lang: Lang = stored.lang ?? (navigator.language.startsWith("de") ? "de" : "en");
     const theme: ThemeSetting = stored.theme === "auto" || isThemeId(stored.theme) ? stored.theme : "auto";
     // Settings live in localStorage, so they can only be read after hydration.
+    const legacy = (stored as { coverAccent?: boolean }).coverAccent;
+    const accentMode = stored.accentMode === "off" || stored.accentMode === "classic" || stored.accentMode === "all" ? stored.accentMode : legacy === false ? "off" : "classic";
+    const customAccent = typeof stored.customAccent === "string" && /^#[0-9a-f]{6}$/i.test(stored.customAccent) ? stored.customAccent : null;
+    const textSize = stored.textSize === "large" || stored.textSize === "xl" ? stored.textSize : "normal";
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme, coverAccent: stored.coverAccent ?? true });
+    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme, accentMode, customAccent, textSize, reduceMotion: stored.reduceMotion === true });
     try {
       const c = JSON.parse(localStorage.getItem("statify.coverColor") ?? "null");
       if (c && typeof c.r === "number") setCoverColorState(c);
@@ -204,16 +213,26 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   }, [genreMix]);
 
   const theme: ThemeId = settings.theme === "auto" ? autoTheme : settings.theme;
-  // accent from album covers; the clean theme stays strictly black/white
+  // accent: own colour > cover colour (where allowed) > the theme's own; the clean theme stays strictly black/white
   useEffect(() => {
     const root = document.documentElement.style;
     const names = ["--accent", "--accent-dim", "--on-accent"];
-    if (!coverColor || !settings.coverAccent || theme === "clean") return names.forEach((n) => root.removeProperty(n));
-    const k = accentTokens(coverColor);
+    const fromCover = coverColor && (settings.accentMode === "all" || (settings.accentMode === "classic" && theme === "classic"));
+    const own = settings.customAccent ? { r: parseInt(settings.customAccent.slice(1, 3), 16), g: parseInt(settings.customAccent.slice(3, 5), 16), b: parseInt(settings.customAccent.slice(5, 7), 16) } : null;
+    const c = own ?? (fromCover ? coverColor : null);
+    if (!c || theme === "clean") return names.forEach((n) => root.removeProperty(n));
+    const k = accentTokens(c);
     root.setProperty("--accent", k.accent);
     root.setProperty("--accent-dim", k.dim);
     root.setProperty("--on-accent", k.on);
-  }, [coverColor, settings.coverAccent, theme]);
+  }, [coverColor, settings.accentMode, settings.customAccent, theme]);
+
+  useEffect(() => {
+    const el = document.documentElement;
+    el.style.fontSize = settings.textSize === "xl" ? "125%" : settings.textSize === "large" ? "112%" : "";
+    if (settings.reduceMotion) el.dataset.motion = "reduced";
+    else delete el.dataset.motion;
+  }, [settings.textSize, settings.reduceMotion]);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;

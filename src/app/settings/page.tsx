@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { GENRES, THEME_IDS, THEME_LABEL, type ThemeId } from "@/lib/theme/themes";
+import { Segmented } from "@/components/Segmented";
 import { Mascot } from "@/components/Mascot";
 
 /** Each swatch previews its theme regardless of the active one by scoping the tokens. */
@@ -121,12 +122,41 @@ export default function Settings() {
         </section>
       )}
 
-      <section className="card p-4">
+      <section className="card space-y-4 p-4">
+        <div>
+          <h2 className="display text-xl">{t("accentTitle")}</h2>
+          <p className="text-sm text-muted">{t("coverAccentSub")}</p>
+        </div>
+        <Segmented
+          label={t("accentTitle")}
+          value={settings.accentMode}
+          onChange={(v) => setSettings({ accentMode: v })}
+          options={[["off", t("accentOff")], ["classic", t("accentClassic")], ["all", t("accentAll")]]}
+        />
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input type="color" aria-label={t("accentOwn")} value={settings.customAccent ?? "#1ed760"} onChange={(e) => setSettings({ customAccent: e.target.value })} className="h-9 w-12 cursor-pointer rounded-md border border-line bg-transparent p-0.5" />
+            {t("accentOwn")}
+          </label>
+          {settings.customAccent && (
+            <button onClick={() => setSettings({ customAccent: null })} className="rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg">
+              {t("accentReset")}
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section className="card space-y-4 p-4">
+        <h2 className="display text-xl">{t("comfortTitle")}</h2>
+        <div className="space-y-1.5">
+          <div className="text-sm text-muted">{t("textSize")}</div>
+          <Segmented label={t("textSize")} value={settings.textSize} onChange={(v) => setSettings({ textSize: v })} options={[["normal", "A"], ["large", "A+"], ["xl", "A++"]]} />
+        </div>
         <label className="flex cursor-pointer items-start gap-3">
-          <input type="checkbox" checked={settings.coverAccent} onChange={(e) => setSettings({ coverAccent: e.target.checked })} className="mt-1.5 accent-[var(--accent)]" />
-          <span>
-            <span className="display text-xl">{t("coverAccent")}</span>
-            <span className="block text-sm text-muted">{t("coverAccentSub")}</span>
+          <input type="checkbox" checked={settings.reduceMotion} onChange={(e) => setSettings({ reduceMotion: e.target.checked })} className="mt-1 accent-[var(--accent)]" />
+          <span className="text-sm">
+            {t("reduceMotion")}
+            <span className="block text-muted">{t("reduceMotionSub")}</span>
           </span>
         </label>
       </section>

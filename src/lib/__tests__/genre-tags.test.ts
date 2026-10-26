@@ -14,4 +14,10 @@ describe("MusicBrainz genre tags", () => {
     expect(genreOf("Some Unknown Band")).toBe("metal");
     expect(genreOf("Taylor Swift")).toBe("pop");
   });
+
+  it("knows the reggae and latin lists", () => {
+    expect(genreOf("Bob Marley")).toBe("reggae");
+    expect(genreOf("Bad Bunny")).toBe("latin");
+    expect(genreOf("Wisin & Yandel")).toBe("latin");
+  });
 });

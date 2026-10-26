@@ -1,15 +1,15 @@
-export const THEME_IDS = ["classic", "comic", "graffiti", "doodle", "punk", "cassette", "vaporwave", "riso", "jazz", "metal", "western", "y2k", "rave", "blueprint", "clean"] as const;
+export const THEME_IDS = ["classic", "comic", "graffiti", "doodle", "punk", "cassette", "vaporwave", "riso", "jazz", "metal", "western", "y2k", "rave", "blueprint", "clean", "reggae", "latin"] as const;
 export type ThemeId = (typeof THEME_IDS)[number];
 export type ThemeSetting = "auto" | ThemeId;
 
-export const GENRES = ["rap", "pop", "rnb", "rock", "metal", "indie", "folk", "electronic", "techno", "hoerspiel", "jazz", "klassik", "country", "ambient"] as const;
+export const GENRES = ["rap", "pop", "rnb", "rock", "metal", "indie", "folk", "electronic", "techno", "hoerspiel", "jazz", "klassik", "country", "ambient", "reggae", "latin"] as const;
 export type Genre = (typeof GENRES)[number];
 
 /** Which drawn style a dominant genre gets in "auto" mode. */
 /** accent colour of each genre, used as the second colour next to the theme accent */
 export const GENRE_COLOR: Record<Genre, string> = {
   rap: "#ff3d9a", pop: "#ff7a1a", rnb: "#a855f7", rock: "#e11d2e", metal: "#8e1013", indie: "#14b8a6", folk: "#84cc16",
-  electronic: "#22d3ee", techno: "#e8ff1a", hoerspiel: "#f59e0b", jazz: "#f28c28", klassik: "#c9a227", country: "#b45309", ambient: "#60a5fa",
+  electronic: "#22d3ee", techno: "#e8ff1a", hoerspiel: "#f59e0b", jazz: "#f28c28", klassik: "#c9a227", country: "#b45309", ambient: "#60a5fa", reggae: "#22c55e", latin: "#ff5a1f",
 };
 
 export const GENRE_THEME: Record<Genre, ThemeId> = {
@@ -27,6 +27,8 @@ export const GENRE_THEME: Record<Genre, ThemeId> = {
   klassik: "jazz",
   country: "western",
   ambient: "blueprint",
+  reggae: "reggae",
+  latin: "latin",
 };
 
 export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de: string; en: string } }> = {
@@ -44,6 +46,8 @@ export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de:
   rave: { de: "Rave-Flyer / Xerox", en: "Rave flyer / Xerox", blurb: { de: "Acid-Gelb, Kopierraster", en: "Acid yellow, photocopy grit" } },
   blueprint: { de: "Blueprint", en: "Blueprint", blurb: { de: "Bauzeichnung auf Gitterpapier", en: "Technical drawing on grid paper" } },
   clean: { de: "Clean (hell/dunkel)", en: "Clean (light/dark)", blurb: { de: "Fast nur Weiß oder Schwarz, folgt dem Handy", en: "Almost pure white or black, follows your phone" } },
+  reggae: { de: "Reggae / Dancehall", en: "Reggae / Dancehall", blurb: { de: "Rot-Gold-Grün, Streifen und Sonne", en: "Red-gold-green, stripes and sun" } },
+  latin: { de: "Latin / Reggaeton", en: "Latin / Reggaeton", blurb: { de: "Papel-Picado-Farben, Sonnenuntergang", en: "Papel picado colours, sunset" } },
   riso: { de: "Risograph-Druck", en: "Risograph print", blurb: { de: "Versetzte Farbebenen, Halbton", en: "Misregistered inks, halftone" } },
 };
 

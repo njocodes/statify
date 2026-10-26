@@ -637,6 +637,95 @@
   border-bottom: 2px solid var(--accent);
 }
 
+/* ---------- REGGAE / DANCEHALL ---------- */
+[data-theme="reggae"] {
+  --bg: #101a0f;
+  --surface: #1a2618;
+  --surface-2: #26361f;
+  --border: #3b5230;
+  --fg: #fdf2d0;
+  --muted: #bfc9a0;
+  --accent: #ffd21f;
+  --accent-dim: #d8ae00;
+  --on-accent: #1b1400;
+  --ink: #ffd21f;
+  --bw: 3px;
+  --radius: 14px;
+  --shadow: 5px 5px 0 #0c5b2a;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-fredoka), var(--font-inter), sans-serif;
+  --display-weight: 600;
+  --display-tracking: 0;
+  color-scheme: dark;
+}
+[data-theme="reggae"] body {
+  background-color: var(--bg);
+  background-image: repeating-linear-gradient(135deg, rgba(225, 29, 46, 0.1) 0 26px, rgba(255, 210, 31, 0.08) 26px 52px, rgba(34, 160, 74, 0.12) 52px 78px);
+  background-attachment: fixed;
+}
+/* the flag colours as a stripe on top of every card */
+[data-theme="reggae"] .card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: block;
+  height: 6px;
+  border: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: linear-gradient(90deg, #e11d2e 0 33.3%, #ffd21f 33.3% 66.6%, #22a04a 66.6%);
+  pointer-events: none;
+}
+[data-theme="reggae"] .logo {
+  color: #ffd21f;
+  text-shadow: 2px 2px 0 #e11d2e, 4px 4px 0 #22a04a;
+}
+
+/* ---------- LATIN / REGGAETON ---------- */
+[data-theme="latin"] {
+  --bg: #ffe6d0;
+  --surface: #fffaf3;
+  --surface-2: #ffd3b4;
+  --border: #3a1230;
+  --fg: #3a1230;
+  --muted: #7a3f60;
+  --accent: #cf3a07;
+  --accent-dim: #a82d05;
+  --on-accent: #ffffff;
+  --ink: #3a1230;
+  --bw: 3px;
+  --radius: 18px;
+  --shadow: 5px 5px 0 #0aa5a0;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-anton), Impact, sans-serif;
+  --display-weight: 400;
+  --display-tracking: 0.04em;
+  color-scheme: light;
+}
+[data-theme="latin"] body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(255, 90, 31, 0.12), rgba(255, 61, 119, 0.1) 60%, rgba(10, 165, 160, 0.12)),
+    conic-gradient(from 45deg at 50% 100%, transparent 0 40%, rgba(58, 18, 48, 0.05) 40% 60%, transparent 60%);
+  background-size: 100% 100%, 36px 36px;
+  background-attachment: fixed;
+}
+/* papel picado: a row of small flags along the top edge of each card */
+[data-theme="latin"] .card::before {
+  content: "";
+  position: absolute;
+  inset: 0 12px auto 12px;
+  display: block;
+  height: 8px;
+  border: 0;
+  background: repeating-linear-gradient(90deg, #ff3d77 0 14px, #ffb81f 14px 28px, #0aa5a0 28px 42px, #8a4dff 42px 56px);
+  clip-path: polygon(0 0, 100% 0, 100% 40%, 96% 100%, 92% 40%, 88% 100%, 84% 40%, 80% 100%, 76% 40%, 72% 100%, 68% 40%, 64% 100%, 60% 40%, 56% 100%, 52% 40%, 48% 100%, 44% 40%, 40% 100%, 36% 40%, 32% 100%, 28% 40%, 24% 100%, 20% 40%, 16% 100%, 12% 40%, 8% 100%, 4% 40%, 0 100%);
+  pointer-events: none;
+}
+[data-theme="latin"] .logo {
+  color: #cf3a07;
+  text-shadow: 2px 2px 0 #ffb81f, 4px 4px 0 #3a1230;
+}
+
 /* ---------- CLEAN (follows the phone's light/dark setting) ---------- */
 [data-theme="clean"] {
   --bg: #ffffff;
@@ -835,6 +924,8 @@ button:active { transform: scale(0.96); transition-duration: 0.05s; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+[data-motion="reduced"] *, [data-motion="reduced"] *::before, [data-motion="reduced"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 
 /* Wrapped story motion */
 @keyframes rise { from { opacity: 0; transform: translateY(28px) scale(0.96); } to { opacity: 1; transform: none; } }
