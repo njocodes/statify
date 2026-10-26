@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { toPng } from "html-to-image";
 import { EmptyNotice } from "@/components/EmptyNotice";
@@ -34,9 +34,31 @@ const rise = (n: number): CSSProperties => ({ animationDelay: `${n * 110}ms` });
 const Label = ({ n = 0, children }: { n?: number; children: ReactNode }) => (
   <div className="rise text-sm font-semibold uppercase tracking-[0.2em] text-muted" style={rise(n)}>{children}</div>
 );
-const Huge = ({ n = 1, size = "clamp(4rem, 22vw, 8rem)", children }: { n?: number; size?: string; children: ReactNode }) => (
-  <div className="display rise break-words leading-[0.95]" style={{ fontSize: size, ...rise(n) }}>{children}</div>
-);
+/** Big display text: shrinks until its longest word fits the width, so words never break in the middle. */
+function Huge({ n = 1, size = "clamp(4rem, 22vw, 8rem)", children }: { n?: number; size?: string; children: ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const fit = () => {
+      el.style.fontSize = size;
+      let px = parseFloat(getComputedStyle(el).fontSize);
+      while (el.scrollWidth > el.clientWidth + 1 && px > 20) {
+        px *= 0.93;
+        el.style.fontSize = `${px}px`;
+      }
+    };
+    fit();
+    document.fonts?.ready.then(fit);
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [children, size]);
+  return (
+    <div ref={ref} className="display rise leading-[0.95]" style={{ fontSize: size, overflowWrap: "normal", wordBreak: "normal", hyphens: "none", ...rise(n) }}>
+      {children}
+    </div>
+  );
+}
 const nameSize = (s: string) => (s.length > 22 ? "clamp(2.2rem, 11vw, 4rem)" : s.length > 12 ? "clamp(3rem, 15vw, 5.5rem)" : "clamp(4rem, 21vw, 7.5rem)");
 
 function Ranked({ items, by, lang, cover }: { items: TopItem[]; by: "plays" | "ms"; lang: "en" | "de"; cover?: boolean }) {
