@@ -39,7 +39,7 @@ Spotify account → Privacy → *Download your data* → select **Extended strea
 npm install
 npm run dev
 npm run typecheck && npm run lint
-npm test         # tests that need a real export are skipped if the folder is missing
+npm test
 npm run build    # static export to ./out
 ```
 

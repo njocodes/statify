@@ -45,3 +45,6 @@ Spotify Extended Streaming History/
 # local
 launch-checks/
 .claude/
+
+# personal-data tests (need a real export, contain personal numbers)
+src/lib/__tests__/real-data.test.ts
