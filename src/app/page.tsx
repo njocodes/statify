@@ -13,13 +13,33 @@ export default function Home() {
         <p className="text-muted">{t("privacy")}</p>
       </div>
       <Dropzone />
-      <section className="card space-y-2 p-5">
+      <section className="card space-y-3 p-5">
+        <h2 className="font-semibold">{t("needTitle")}</h2>
+        <ul className="list-disc space-y-1 pl-5 text-sm text-muted">
+          {(["need1", "need2", "need3", "need4"] as const).map((k) => (
+            <li key={k}>{t(k)}</li>
+          ))}
+        </ul>
+      </section>
+      <section className="card space-y-4 p-5">
         <h2 className="font-semibold">{t("howTitle")}</h2>
-        <ol className="list-decimal space-y-1 pl-5 text-sm text-muted">
-          <li>{t("how1")}</li>
-          <li>{t("how2")}</li>
-          <li>{t("how3")}</li>
+        <ol className="space-y-4">
+          {([1, 2, 3, 4, 5] as const).map((n) => (
+            <li key={n} className="flex gap-3">
+              <span aria-hidden className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-accent text-sm font-bold text-onaccent">{n}</span>
+              <div className="min-w-0 space-y-1">
+                <h3 className="font-medium">{t(`how${n}t` as const)}</h3>
+                <p className="text-sm text-muted">{t(`how${n}` as const)}</p>
+                {n === 1 && (
+                  <a href="https://www.spotify.com/account/privacy/" target="_blank" rel="noopener noreferrer" className="inline-block rounded-full border border-line px-3 py-1 text-sm underline underline-offset-2">
+                    {t("how1link")} ↗
+                  </a>
+                )}
+              </div>
+            </li>
+          ))}
         </ol>
+        <p className="border-t border-line pt-3 text-sm text-muted">{t("howNote")}</p>
       </section>
       <p className="text-xs text-muted">{t("disclaimer")}</p>
     </div>
