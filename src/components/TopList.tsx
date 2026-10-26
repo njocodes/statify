@@ -39,7 +39,7 @@ export function TopList({ title, items, type }: { title: string; items: Record<"
                 <div className="truncate text-sm font-medium group-hover:text-accent">{it.title || "–"}</div>
                 {it.subtitle && <div className="truncate text-xs text-muted">{it.subtitle}</div>}
                 <div className="mt-1 h-1 rounded-full bg-surface2 group-hover:bg-surface">
-                  <div className="h-1 rounded-full bg-accent" style={{ width: `${(it[by] / max) * 100}%` }} />
+                  <div className="h-1 rounded-full bg-accent" style={{ width: `${(it[by] / max) * 100}%`, backgroundImage: "linear-gradient(90deg, var(--accent), var(--accent-2, var(--accent)))" }} />
                 </div>
               </div>
               <div className="shrink-0 text-right text-xs text-muted">

@@ -59,19 +59,38 @@ export interface GenreMix {
   byGenre: Partial<Record<Genre, number>>;
   matchedMs: number;
   totalMs: number;
+  /** share of track plays that were skipped */
+  skipRate: number;
+  /** share of listening time between 00:00 and 05:00 local time */
+  nightShare: number;
 }
 
 const MIN_COVERAGE = 0.12;
 
-export function dominantGenre(mix: GenreMix): Genre | null {
-  if (!mix.totalMs || mix.matchedMs / mix.totalMs < MIN_COVERAGE) return null;
-  let best: Genre | null = null;
-  let max = 0;
-  for (const [g, ms] of Object.entries(mix.byGenre) as [Genre, number][]) {
-    if (ms > max) {
-      max = ms;
-      best = g;
-    }
-  }
-  return best;
+/** genres ranked by listening time, or [] when too little of the history could be matched */
+export function rankedGenres(mix: GenreMix): Genre[] {
+  if (!mix.totalMs || mix.matchedMs / mix.totalMs < MIN_COVERAGE) return [];
+  return (Object.entries(mix.byGenre) as [Genre, number][]).sort((a, b) => b[1] - a[1]).map(([g]) => g);
 }
+
+export function dominantGenre(mix: GenreMix): Genre | null {
+  return rankedGenres(mix)[0] ?? null;
+}
+
+/** a second genre only counts as an accent when it is a real part of the history */
+export function secondaryGenre(mix: GenreMix): Genre | null {
+  const [, second] = rankedGenres(mix);
+  return second && (mix.byGenre[second] ?? 0) / mix.matchedMs >= 0.05 ? second : null;
+}
+
+export type Mood = "happy" | "grumpy" | "sleepy";
+export type Hat = "none" | "cap" | "cowboy" | "beret" | "spikes";
+
+export function moodOf(mix: GenreMix): Mood {
+  if (mix.nightShare > 0.15) return "sleepy";
+  if (mix.skipRate > 0.45) return "grumpy";
+  return "happy";
+}
+
+const HAT: Partial<Record<Genre, Hat>> = { rap: "cap", country: "cowboy", jazz: "beret", klassik: "beret", rock: "spikes", metal: "spikes" };
+export const hatOf = (g: Genre | null): Hat => (g && HAT[g]) || "none";

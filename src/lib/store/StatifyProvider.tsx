@@ -4,8 +4,8 @@ import type { Req, Res, ViewData } from "../worker/stats.worker";
 import type { Extent, DashboardData } from "../stats/query";
 import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
-import { dominantGenre, type GenreMix } from "../theme/genres";
-import { GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
+import { dominantGenre, hatOf, moodOf, secondaryGenre, type GenreMix, type Hat, type Mood } from "../theme/genres";
+import { GENRE_COLOR, GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
 import { dicts, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
@@ -26,6 +26,8 @@ interface Ctx {
   theme: ThemeId;
   autoTheme: ThemeId;
   genreMix: GenreMix | null;
+  /** how Statty looks, derived from the listening history */
+  mascot: { mood: Mood; hat: Hat };
   setSettings: (s: Partial<Settings>) => void;
   t: (k: Key) => string;
   ingest: (files: File[], onProgress?: (done: number, total: number) => void) => Promise<IngestRes>;
@@ -139,6 +141,18 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     };
   }, [ready, extent, call]);
 
+  const mascot = useMemo(
+    () => ({ mood: genreMix ? moodOf(genreMix) : ("happy" as Mood), hat: hatOf(genreMix ? dominantGenre(genreMix) : null) }),
+    [genreMix],
+  );
+  // The second genre tints secondary highlights (bars, chips) via --accent-2.
+  useEffect(() => {
+    const g = genreMix ? secondaryGenre(genreMix) : null;
+    const root = document.documentElement.style;
+    if (g) root.setProperty("--accent-2", GENRE_COLOR[g]);
+    else root.removeProperty("--accent-2");
+  }, [genreMix]);
+
   const theme: ThemeId = settings.theme === "auto" ? autoTheme : settings.theme;
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -154,6 +168,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       theme,
       autoTheme,
       genreMix,
+      mascot,
       setSettings,
       t: (k) => dicts[settings.lang][k],
       ingest: async (files, onProgress) => {
@@ -193,7 +208,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ready, extent, settings, theme, autoTheme, genreMix, setSettings, call],
+    [ready, extent, settings, theme, autoTheme, genreMix, mascot, setSettings, call],
   );
 
   return <C.Provider value={value}>{children}</C.Provider>;

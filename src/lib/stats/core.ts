@@ -110,7 +110,7 @@ export function top(plays: Play[], f: Filter, kind: TopKind, by: "plays" | "ms",
   return [...m.values()].sort((a, b) => b[by] - a[by] || b.ms - a.ms).slice(0, limit);
 }
 
-const parts = (ts: number, tz: string) => {
+export const parts = (ts: number, tz: string) => {
   let fmt = partsFmt.get(tz);
   if (!fmt)
     partsFmt.set(
