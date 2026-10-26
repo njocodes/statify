@@ -35,6 +35,25 @@ export default function Discovery() {
               </ResponsiveContainer>
             </div>
           </section>
+          <section className="card space-y-3 p-4">
+            <h2 className="font-semibold">{t("dcNewShare")}</h2>
+            <div className="h-48">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data.newShare.map((d) => ({ month: d.month, new: Math.round(d.newMs / 3.6e5) / 10, known: Math.round(d.knownMs / 3.6e5) / 10 }))} margin={{ left: -20, right: 4, top: 4 }}>
+                  <XAxis dataKey="month" tick={{ fill: "var(--muted)", fontSize: 10 }} tickFormatter={(m: string) => (m.endsWith("-01") ? m.slice(0, 4) : "")} interval={0} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: "var(--muted)", fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <Tooltip cursor={{ fill: "rgba(255,255,255,0.05)" }} contentStyle={{ background: "var(--surface)", color: "var(--fg)", border: "1px solid var(--border)", borderRadius: 8, fontSize: 12 }} formatter={(v) => [`${v} h`, ""]} />
+                  <Bar dataKey="known" name={t("dcKnown")} stackId="a" fill="var(--surface-2)" isAnimationActive={false} />
+                  <Bar dataKey="new" name={t("dcNew")} stackId="a" fill="var(--accent)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            {data.adoptDays !== null && (
+              <p className="text-sm text-muted">
+                {t("dcAdopt")}: <span className="font-semibold text-fg">{fmtInt(data.adoptDays, L)}</span>
+              </p>
+            )}
+          </section>
           {data.rankByYear.length > 1 && (
             <section className="card space-y-3 p-4">
               <h2 className="font-semibold">{t("rankByYear")}</h2>

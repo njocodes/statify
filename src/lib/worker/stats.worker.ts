@@ -5,12 +5,13 @@ import { appendPlays, clearAll, loadPlays } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
 import { trends, type TrendsData } from "../stats/trends";
+import { compare, genreStats, milestones, onThisDay, phases, type DayYear, type GenreStats, type Milestone, type Period, type Phase, type PeriodSummary } from "../stats/extras";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
 import { genreOf, type GenreMix } from "../theme/genres";
 import { dayKey, parts } from "../stats/core";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
-export type ViewData = BehaviorData | DiscoveryData | PodcastData | TrendsData;
+export type ViewData = BehaviorData | DiscoveryData | PodcastData | TrendsData | GenreStats | Phase[] | Milestone[];
 
 export type Req =
   | { id: number; type: "load" }
@@ -20,7 +21,9 @@ export type Req =
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
   | { id: number; type: "search"; q: string; filter: Filter }
   | { id: number; type: "genres" }
-  | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts" | "trends"; filter: Filter };
+  | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones"; filter: Filter }
+  | { id: number; type: "onThisDay"; filter: Filter; md: string }
+  | { id: number; type: "compare"; filter: Filter; a: Period; b: Period };
 
 export type Res =
   | { id: number; ok: true; type: "load"; extent: Extent }
@@ -40,6 +43,8 @@ export type Res =
   | { id: number; ok: true; type: "search"; hits: SearchHit[] }
   | { id: number; ok: true; type: "genres"; mix: GenreMix }
   | { id: number; ok: true; type: "view"; data: ViewData }
+  | { id: number; ok: true; type: "onThisDay"; days: DayYear[] }
+  | { id: number; ok: true; type: "compare"; data: [PeriodSummary, PeriodSummary] }
   | { id: number; ok: false; error: string }
   | { id: -1; progress: { done: number; total: number } };
 
@@ -111,8 +116,21 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         break;
       }
       case "view": {
-        const data = r.view === "trends" ? trends(plays) : { behavior, discovery, podcasts }[r.view](plays, r.filter);
+        const data =
+          r.view === "trends" ? trends(plays)
+          : r.view === "genres" ? genreStats(plays, r.filter)
+          : r.view === "phases" ? phases(plays, r.filter)
+          : r.view === "milestones" ? milestones(plays, r.filter)
+          : { behavior, discovery, podcasts }[r.view](plays, r.filter);
         post({ id: r.id, ok: true, type: "view", data });
+        break;
+      }
+      case "onThisDay": {
+        post({ id: r.id, ok: true, type: "onThisDay", days: onThisDay(plays, r.filter, r.md) });
+        break;
+      }
+      case "compare": {
+        post({ id: r.id, ok: true, type: "compare", data: compare(plays, r.filter, r.a, r.b) });
         break;
       }
       case "genres": {

@@ -5,6 +5,8 @@ import { useStatify } from "@/lib/store/StatifyProvider";
 import { useDashboard } from "@/lib/store/useDashboard";
 import { FilterBar } from "@/components/FilterBar";
 import { Stat } from "@/components/Stat";
+import { Milestones } from "@/components/Milestones";
+import { OnThisDay } from "@/components/OnThisDay";
 import { TopList } from "@/components/TopList";
 import { fetchCover } from "@/components/Cover";
 import { blend, dominantColor, loadForPixels, type Rgb } from "@/lib/theme/coverColor";
@@ -62,6 +64,10 @@ export default function Dashboard() {
             <TopList title={t("topTracks")} items={data.top.tracks} type="track" />
             <TopList title={t("topArtists")} items={data.top.artists} type="artist" />
             <TopList title={t("topAlbums")} items={data.top.albums} type="album" />
+          </div>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <OnThisDay />
+            <Milestones />
           </div>
         </>
       )}

@@ -3,6 +3,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import type { Req, Res, ViewData } from "../worker/stats.worker";
 import type { Extent, DashboardData } from "../stats/query";
 import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
+import type { DayYear, Period, PeriodSummary } from "../stats/extras";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
 import { dominantGenre, hatOf, moodOf, secondaryGenre, type GenreMix, type Hat, type Mood } from "../theme/genres";
 import { GENRE_COLOR, GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
@@ -42,7 +43,9 @@ interface Ctx {
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
   detail: (entity: EntityType, key: string) => Promise<Detail | null>;
   search: (q: string) => Promise<SearchHit[]>;
-  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends", f: Pick<Filter, "from" | "to">) => Promise<T>;
+  onThisDay: (md: string) => Promise<DayYear[]>;
+  compare: (a: Period, b: Period) => Promise<[PeriodSummary, PeriodSummary]>;
+  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones", f: Pick<Filter, "from" | "to">) => Promise<T>;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -229,13 +232,21 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         const r = await call<Extract<Res, { type: "detail" }>>({ type: "detail", entity, key, filter: baseFilter });
         return r.data;
       },
-      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends", f: Pick<Filter, "from" | "to">) => {
+      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones", f: Pick<Filter, "from" | "to">) => {
         const r = await call<Extract<Res, { type: "view" }>>({
           type: "view",
           view,
           filter: { ...f, minPlayMs: settings.minPlayMs, tz: settings.tz },
         });
         return r.data as T;
+      },
+      onThisDay: async (md) => {
+        const r = await call<Extract<Res, { type: "onThisDay" }>>({ type: "onThisDay", md, filter: baseFilter });
+        return r.days;
+      },
+      compare: async (a, b) => {
+        const r = await call<Extract<Res, { type: "compare" }>>({ type: "compare", a, b, filter: baseFilter });
+        return r.data;
       },
       search: async (q) => {
         const r = await call<Extract<Res, { type: "search" }>>({ type: "search", q, filter: baseFilter });

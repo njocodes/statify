@@ -55,6 +55,44 @@ export function genreOf(artist: string): Genre | null {
   return null;
 }
 
+
+// ---- sub-genres: a finer split inside the main genres (themes still follow the main genre) ----
+// Artists of a main genre that are in none of these lists land in "<genre>" itself (labelled "other" in the UI).
+export const SUBGENRES: Record<string, { parent: Genre; artists: string }> = {
+  rap_boombap: { parent: "rap", artists: "beginner;absolute beginner;samy deluxe;dendemann;freundeskreis;die fantastischen vier;fettes brot;blumentopf;torch;afrob;curse;jan delay;peter fox;seeed;marteria;casper;kaptn peng;prinz pi;fatoni;edgar wasser;retrogott;hulk hodn;morlockk dilemma;kitschkrieg;raportagen;moop mama;antilopen gang;nas;wu tang clan;outkast;a tribe called quest;j cole;kendrick lamar;run the jewels;chance the rapper;logic;joyner lucas;ice cube;2pac;the notorious b i g;dr dre;snoop dogg" },
+  rap_street: { parent: "rap", artists: "bushido;sido;kollegah;farid bang;haftbefehl;kool savas;eko fresh;fler;shindy;kc rebell;summer cem;olexesh;xatar;azet;zuna;celo abdi;bass sultan hengzt;mero;gzuz;187 strassenbande;bonez mc;ssio;samra;ak ausserkontrolle;capital bra;50 cent;ice cube" },
+  rap_trap: { parent: "rap", artists: "rin;ufo361;apache 207;ski aggu;luciano;lune;badmomzjay;ennio;nimo;trettmann;haiyti;yung hurn;bausa;miksu macloud;dardan;gringo;disarstar;travis scott;future;21 savage;lil uzi vert;juice wrld;polo g;roddy ricch;dababy;post malone;lil wayne;lil nas x;cardi b;nicki minaj;megan thee stallion;drake;kanye west;ye;tyler the creator;a ap rocky;mac miller;kid cudi;doja cat;lizzo;lil dicky;nf;eminem;denzel curry;jid;j i d;pusha t;big sean" },
+  rock_punk: { parent: "rock", artists: "green day;blink 182;sum 41;the offspring;rancid;nofx;pennywise;bad religion;ramones;sex pistols;the clash;die toten hosen;broilers;beatsteaks;donots;itchy;turbostaat;feine sahne fischfilet;frei wild;toxpack;sondaschule;dropkick murphys;social distortion;rise against;anti flag;good charlotte;simple plan;yellowcard;taking back sunday;all time low;neck deep;state champs;pierce the veil;sleeping with sirens;fall out boy;panic at the disco;my chemical romance;the hives;die arzte;farin urlaub;kraftklub;wir sind helden" },
+  rock_classic: { parent: "rock", artists: "queen;ac dc;led zeppelin;pink floyd;the beatles;the rolling stones;guns n roses;the doors;jimi hendrix;deep purple;scorpions;kiss;aerosmith;bon jovi;def leppard;van halen;ozzy osbourne;the who;thin lizzy;creedence clearwater revival;lynyrd skynyrd;fleetwood mac;bohse onkelz;onkelz;queens of the stone age;the black keys;royal blood;greta van fleet;wolfmother;the white stripes;red hot chili peppers" },
+  rock_alt: { parent: "rock", artists: "linkin park;nirvana;foo fighters;muse;billy talent;papa roach;limp bizkit;rage against the machine;korn;system of a down;deftones;tool;a perfect circle;alice in chains;soundgarden;pearl jam;stone temple pilots;evanescence;skillet;hollywood undead;three days grace;breaking benjamin;disturbed;shinedown;godsmack;seether;nickelback;creed;staind;hoobastank;twenty one pilots;bring me the horizon;bullet for my valentine;five finger death punch;volbeat;mgk;machine gun kelly;falling in reverse;motionless in white;asking alexandria;emil bulls;callejon" },
+  metal_heavy: { parent: "metal", artists: "metallica;iron maiden;black sabbath;judas priest;slayer;megadeth;pantera;motorhead;accept;helloween;blind guardian;gamma ray;dream theater;sabaton;powerwolf;amon amarth;ghost;kreator;sodom;tankard;avenged sevenfold;opeth;volbeat;lordi;alestorm;nightwish;within temptation;epica;lacuna coil;children of bodom;in flames;dark tranquillity;at the gates;arch enemy;dimmu borgir;cradle of filth;behemoth;meshuggah;mastodon;gojira" },
+  metal_core: { parent: "metal", artists: "architects;parkway drive;fit for a king;spiritbox;sleep token;lamb of god;trivium;heaven shall burn;hatebreed;bring me the horizon;bullet for my valentine;motionless in white;falling in reverse;asking alexandria;callejon;slipknot;korn;deftones;system of a down" },
+  metal_ndh: { parent: "metal", artists: "rammstein;eisbrecher;oomph;rob zombie;marilyn manson;motley crue;ensiferum;in extremo;subway to sally;saltatio mortis;schandmaul;feuerschwanz;letzte instanz;eluveitie" },
+  pop_de: { parent: "pop", artists: "mark forster;sarah connor;andreas bourani;silbermond;tokio hotel;wincent weiss;lena;namika;lea;revolverheld;johannes oerding;max giesinger;alvaro soler;glasperlenspiel;culcha candela;nena;rosenstolz;christina stuermer;die prinzen;pur;mia;juli;sportfreunde stiller;laith al deen;ich und ich;xavier naidoo;sasha;thomas d;mary roos;lou bega;modern talking;blumchen;cro;casper;peter fox;clueso;max herre" },
+  pop_schlager: { parent: "pop", artists: "helene fischer;howard carpendale;roland kaiser;andrea berg;michael wendler;mickie krause;ballermann hits;ikke huftgold;schlager;vanessa mai;beatrice egli;kerstin ott;dj otzi;mr president" },
+  pop_int: { parent: "pop", artists: "taylor swift;ed sheeran;ariana grande;dua lipa;the weeknd;billie eilish;harry styles;justin bieber;adele;lady gaga;rihanna;beyonce;katy perry;bruno mars;coldplay;imagine dragons;maroon 5;onerepublic;shawn mendes;selena gomez;miley cyrus;olivia rodrigo;sia;lewis capaldi;sam smith;calum scott;michael jackson;madonna;britney spears;pink;shakira;jennifer lopez;justin timberlake;charlie puth;camila cabello;meghan trainor;zara larsson;ava max;tate mcrae;sabrina carpenter;abba;george michael;elton john;whitney houston;celine dion;mariah carey;backstreet boys;one direction;robbie williams;kelly clarkson;demi lovato;lorde;halsey;ellie goulding;jason derulo;enrique iglesias;bad bunny;rosalia;stromae" },
+  electronic_edm: { parent: "electronic", artists: "avicii;calvin harris;david guetta;martin garrix;kygo;alan walker;marshmello;zedd;tiesto;armin van buuren;robin schulz;felix jaehn;alle farben;lost frequencies;dimitri vegas like mike;afrojack;hardwell;steve aoki;diplo;major lazer;jauz;illenium;seven lions;swedish house mafia;the chainsmokers;basshunter;vengaboys;snap;haddaway;culture beat;cascada;sash;dj bobo;scooter" },
+  electronic_chill: { parent: "electronic", artists: "bonobo;moderat;apparat;modeselektor;four tet;jon hopkins;caribou;burial;boards of canada;aphex twin;odesza;flume;disclosure;kaytranada;rufus du sol;lane 8;ben bohmer;yotto;parov stelar;cassius;purple disco machine;meduza;bob sinclar;daft punk;justice;kavinsky;gesaffelstein;deadmau5;skrillex;madeon;porter robinson;crystal castles;chvrches;purity ring;grimes;mura masa;fred again;the chemical brothers;the prodigy;fisher;peggy gou;kollektiv turmstrasse" },
+  rnb_soul: { parent: "rnb", artists: "marvin gaye;stevie wonder;al green;otis redding;aretha franklin;james brown;earth wind fire;kool the gang;chic;donna summer;bee gees;prince;sade;erykah badu;d angelo;lauryn hill;the fugees;mary j blige;tlc;en vogue;janet jackson;boyz ii men;jodeci;blackstreet;112;brandy;monica;toni braxton;aaliyah;destinys child" },
+};
+
+const SUB_INDEX = new Map<string, string>();
+for (const [id, { artists }] of Object.entries(SUBGENRES)) {
+  for (const raw of artists.split(";")) {
+    const key = normalize(raw);
+    if (key && !SUB_INDEX.has(key)) SUB_INDEX.set(key, id);
+  }
+}
+
+/** sub-genre id of an artist ("rap_trap", …), the plain genre id when no finer list knows it, or null */
+export function subGenreOf(artist: string): { genre: Genre; sub: string } | null {
+  const genre = genreOf(artist);
+  if (!genre) return null;
+  const sub = SUB_INDEX.get(normalize(artist));
+  // a sub-genre only counts when it belongs to the artist's main genre
+  return { genre, sub: sub && SUBGENRES[sub].parent === genre ? sub : genre };
+}
+
 export interface GenreMix {
   byGenre: Partial<Record<Genre, number>>;
   matchedMs: number;

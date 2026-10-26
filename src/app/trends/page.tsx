@@ -9,6 +9,8 @@ import { Spark } from "@/components/Spark";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtDec, fmtInt } from "@/lib/format";
 import type { Key } from "@/lib/i18n/dict";
+import type { Phase } from "@/lib/stats/extras";
+import { fmtMonth } from "@/lib/format-month";
 
 const fmtMs = (ms: number, lang: "en" | "de") => (ms >= 3_600_000 ? `${fmtDec(ms / 3_600_000, lang)} h` : `${fmtInt(ms / 60_000, lang)} min`);
 
@@ -65,6 +67,40 @@ function Section({ title, items, type, mode, lang }: { title: string; items: Tre
   );
 }
 
+function Phases() {
+  const { t, settings } = useStatify();
+  const { data } = useView<Phase[]>("phases");
+  const L = settings.lang;
+  if (!data?.length) return null;
+  return (
+    <section className="card min-w-0 p-4">
+      <h2 className="font-semibold">{t("phTitle")}</h2>
+      <p className="mb-3 text-xs text-muted">{t("phSub")}</p>
+      <ul className="space-y-1">
+        {data.slice(0, 10).map((p) => (
+          <li key={`${p.artist}-${p.from}`}>
+            <Link href={`/item/?type=artist&id=${encodeURIComponent(p.artist)}`} className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-transform duration-150 hover:bg-surface2 active:scale-[0.985]">
+              <Cover uri={p.uri} label={p.artist} />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium group-hover:text-accent">{p.artist}</div>
+                <div className="truncate text-xs text-muted">
+                  {p.from === p.to ? fmtMonth(p.from, L) : `${fmtMonth(p.from, L)} – ${fmtMonth(p.to, L)}`} · {p.topTrack}
+                </div>
+              </div>
+              <div className="shrink-0 text-right text-xs text-muted">
+                <div className="font-semibold text-fg">{fmtDec(p.ms / 3_600_000, L)} h</div>
+                <div>
+                  {fmtInt(p.peakShare * 100, L)} % {t("phPeak")}
+                </div>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 export default function Trends() {
   const { t, settings } = useStatify();
   const { data, ready, hasData } = useView<TrendsData>("trends");
@@ -91,6 +127,7 @@ export default function Trends() {
           <Section title={t("trComeback")} items={g.comebacks} type={type} mode="new" lang={lang} />
         </div>
       )}
+      <Phases />
     </div>
   );
 }

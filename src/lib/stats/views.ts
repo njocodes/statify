@@ -81,6 +81,10 @@ export interface DiscoveryData {
   forgotten: TopItem[];
   /** artists whose first play was in the current range, most played first */
   discoveries: { artist: string; first: number; plays: number }[];
+  /** per month: listening time from artists first heard that month vs. artists already known */
+  newShare: { month: string; newMs: number; knownMs: number }[];
+  /** median days from an artist's first play to its 10th play (null when too little data) */
+  adoptDays: number | null;
 }
 
 const FORGOTTEN_MIN_PLAYS = 15;
@@ -151,7 +155,31 @@ export function discovery(all: Play[], f: Filter): DiscoveryData {
     .sort((a, b) => b.plays - a.plays)
     .slice(0, 20);
 
+  const newShareMap = new Map<string, { newMs: number; knownMs: number }>();
+  for (const p of plays) {
+    const m = dayKey(p.start, f.tz).slice(0, 7);
+    const isNew = dayKey(firstSeen.get(p.artist) ?? p.start, f.tz).slice(0, 7) === m;
+    const e = newShareMap.get(m) ?? { newMs: 0, knownMs: 0 };
+    if (isNew) e.newMs += p.ms;
+    else e.knownMs += p.ms;
+    newShareMap.set(m, e);
+  }
+  // adoption speed: days until an artist reaches 10 counted plays (skip the first month, where everything is "new")
+  const dataStart = tracksAll.reduce((m, p) => Math.min(m, p.start), Infinity);
+  const counted = new Map<string, number>();
+  const gaps: number[] = [];
+  for (const p of [...tracksAll].sort((a, b) => a.start - b.start)) {
+    if (!counts(p, f)) continue;
+    const n = (counted.get(p.artist) ?? 0) + 1;
+    counted.set(p.artist, n);
+    const first = firstSeen.get(p.artist) ?? p.start;
+    if (n === 10 && first > dataStart + 30 * 86_400_000) gaps.push((p.start - first) / 86_400_000);
+  }
+  gaps.sort((a, b) => a - b);
+
   return {
+    newShare: [...newShareMap.entries()].sort().map(([month, v]) => ({ month, ...v })),
+    adoptDays: gaps.length >= 5 ? Math.round(gaps[Math.floor(gaps.length / 2)]) : null,
     newArtists: [...newByMonth.entries()].sort().map(([month, count]) => ({ month, count })),
     monthlyTop,
     rankByYear,

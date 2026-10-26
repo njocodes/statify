@@ -21,6 +21,8 @@ const PATTERNS: Item = { href: "/patterns/", key: "nav_patterns", icon: svg("M12
 const BEHAVIOR: Item = { href: "/behavior/", key: "nav_behavior", icon: svg("M5 5l9 7-9 7zM18 5v14") };
 const DISCOVERY: Item = { href: "/discovery/", key: "nav_discovery", icon: svg("M12 3a9 9 0 100 18 9 9 0 000-18zM15.5 8.5l-2 5-5 2 2-5z") };
 const TRENDS: Item = { href: "/trends/", key: "nav_trends", icon: svg("M3 17l6-6 4 4 8-8M15 7h6v6") };
+const GENRES_ITEM: Item = { href: "/genres/", key: "nav_genres", icon: svg("M4 19V9M9 19V5M14 19v-8M19 19V7") };
+const COMPARE: Item = { href: "/compare/", key: "nav_compare", icon: svg("M4 7h7M4 12h5M4 17h7M15 6v12M20 6v12") };
 const WRAPPED: Item = { href: "/wrapped/", key: "nav_wrapped", icon: svg("M12 3l2.5 6 6.5.5-5 4.3 1.6 6.4L12 16.8 6.4 20.2 8 13.8 3 9.5 9.5 9z") };
 const PODCASTS: Item = { href: "/podcasts/", key: "nav_podcasts", icon: svg("M9 4a3 3 0 016 0v7a3 3 0 01-6 0zM5 11a7 7 0 0014 0M12 18v3") };
 const UPLOAD: Item = { href: "/", key: "nav_upload", icon: svg("M12 16V4M7 9l5-5 5 5M5 20h14") };
@@ -34,10 +36,10 @@ export function Nav() {
   const { t, settings, setSettings, extent } = useStatify();
   const path = usePathname();
   const hasData = !!extent?.first;
-  const all = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY, TRENDS, PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [UPLOAD, SETTINGS];
+  const all = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY, TRENDS, GENRES_ITEM, COMPARE, PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [UPLOAD, SETTINGS];
   // Phone: four main tabs plus a "more" sheet, like a native tab bar.
   const tabs = hasData ? [DASH, PATTERNS, BEHAVIOR, DISCOVERY] : [UPLOAD, SETTINGS];
-  const more = hasData ? [TRENDS, PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [];
+  const more = hasData ? [TRENDS, GENRES_ITEM, COMPARE, PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [];
   const moreActive = more.some((i) => i.href === path);
   const [sheet, setSheet] = useState(false);
   const [panel, setPanel] = useState(false);
@@ -94,7 +96,7 @@ export function Nav() {
         {sheet && (
           <>
             <button aria-label="Close" className="pointer-events-auto fixed inset-0 -z-10 cursor-default" onClick={() => setSheet(false)} />
-            <div className="pointer-events-auto page-in w-full max-w-sm self-end rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "11rem" }}>
+            <div className="pointer-events-auto page-in w-full max-w-sm self-end overflow-y-auto rounded-3xl border border-line bg-surface/95 p-1.5 shadow-xl backdrop-blur-xl sm:hidden" style={{ maxWidth: "11rem", maxHeight: "55dvh" }}>
               {more.map((i) => (
                 <Link key={i.href} href={i.href} onClick={() => setSheet(false)} className={`flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm active:scale-[0.97] ${path === i.href ? "bg-accent text-onaccent" : "text-fg"}`}>
                   {i.icon}
