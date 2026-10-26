@@ -45,7 +45,7 @@ interface Ctx {
   search: (q: string) => Promise<SearchHit[]>;
   onThisDay: (md: string) => Promise<DayYear[]>;
   compare: (a: Period, b: Period) => Promise<[PeriodSummary, PeriodSummary]>;
-  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones", f: Pick<Filter, "from" | "to">) => Promise<T>;
+  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones" | "habits", f: Pick<Filter, "from" | "to">) => Promise<T>;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -232,7 +232,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         const r = await call<Extract<Res, { type: "detail" }>>({ type: "detail", entity, key, filter: baseFilter });
         return r.data;
       },
-      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones", f: Pick<Filter, "from" | "to">) => {
+      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones" | "habits", f: Pick<Filter, "from" | "to">) => {
         const r = await call<Extract<Res, { type: "view" }>>({
           type: "view",
           view,

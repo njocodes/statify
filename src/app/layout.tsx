@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Bangers, Comic_Neue, Permanent_Marker, Patrick_Hand, Gochi_Hand, UnifrakturCook, Special_Elite, Caveat, Audiowide, Archivo_Black, Anton, Rye, Pirata_One, Fredoka, Rubik_Mono_One, Share_Tech_Mono, Space_Mono } from "next/font/google";
 import "./globals.css";
 import { StatifyProvider } from "@/lib/store/StatifyProvider";
+import { RegisterSW } from "@/components/RegisterSW";
+import { PullToRefresh } from "@/components/PullToRefresh";
 import { Nav } from "@/components/Nav";
 import { SvgDefs } from "@/components/SvgDefs";
 
@@ -46,6 +48,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="antialiased">
         <SvgDefs />
+        <RegisterSW />
+        <PullToRefresh />
         <StatifyProvider>
           <Nav />
           <main className="mx-auto w-full max-w-6xl px-4 pb-32 pt-6 sm:pb-24">{children}</main>

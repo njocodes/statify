@@ -844,3 +844,10 @@ button:active { transform: scale(0.96); transition-duration: 0.05s; }
 .pop { animation: pop 0.8s var(--ease-spring) both; }
 .grow { transform-origin: left; animation: grow 0.9s var(--ease-spring) both; }
 .growY { transform-origin: bottom; animation: growY 0.8s var(--ease-spring) both; }
+
+/* iOS zooms into fields below 16px; keep inputs at 16px on touch screens */
+@media (max-width: 639px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}

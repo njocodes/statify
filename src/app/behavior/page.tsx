@@ -7,6 +7,58 @@ import { Stat } from "@/components/Stat";
 import { DistList } from "@/components/DistList";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { fmtInt } from "@/lib/format";
+import { Cover } from "@/components/Cover";
+import Link from "next/link";
+import type { HabitItem, HabitsData } from "@/lib/stats/extras";
+
+function HabitList({ title, items, kind, entity }: { title: string; items: HabitItem[]; kind: "skip" | "times" | "runs"; entity: "track" | "artist" | "album" }) {
+  const { t, settings } = useStatify();
+  if (!items.length) return null;
+  return (
+    <section className="card min-w-0 p-4">
+      <h2 className="mb-3 font-semibold">{title}</h2>
+      <ol className="space-y-1">
+        {items.map((it, i) => (
+          <li key={it.key}>
+            <Link href={`/item/?type=${entity}&id=${encodeURIComponent(it.key)}`} className="group -mx-2 flex items-center gap-3 rounded-lg px-2 py-1.5 transition-transform duration-150 hover:bg-surface2 active:scale-[0.985]">
+              <span className="w-4 shrink-0 text-right text-xs text-muted">{i + 1}</span>
+              <Cover uri={it.uri} label={it.title} size={36} />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium group-hover:text-accent">{it.title}</div>
+                {it.subtitle && <div className="truncate text-xs text-muted">{it.subtitle}</div>}
+              </div>
+              <div className="shrink-0 text-right text-xs">
+                <div className="font-semibold text-accent">{kind === "skip" ? `${Math.round(it.value * 100)} %` : kind === "times" ? `${fmtInt(it.value, settings.lang)} ${t("hbTimes")}` : `${fmtInt(it.value, settings.lang)} ${t("hbRuns")}`}</div>
+                {kind === "skip" && <div className="text-muted">{fmtInt(it.total, settings.lang)} {t("hbEntries")}</div>}
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function Habits() {
+  const { t } = useStatify();
+  const { data } = useView<HabitsData>("habits");
+  if (!data) return null;
+  const pct = (x: number) => `${Math.round(x * 100)} %`;
+  return (
+    <>
+      <div className="grid grid-cols-2 gap-3">
+        <Stat label={t("hbSkipShuffle")} value={pct(data.skipRateShuffle)} />
+        <Stat label={t("hbSkipDirect")} value={pct(data.skipRateDirect)} />
+      </div>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <HabitList title={t("hbMostSkipped")} items={data.skippedTracks} kind="skip" entity="track" />
+        <HabitList title={t("hbMostSkippedArtists")} items={data.skippedArtists} kind="skip" entity="artist" />
+        <HabitList title={t("hbRepeats")} items={data.repeats} kind="times" entity="track" />
+        <HabitList title={t("hbAlbums")} items={data.albumRuns} kind="runs" entity="album" />
+      </div>
+    </>
+  );
+}
 
 export default function Behavior() {
   const { t, settings } = useStatify();
@@ -44,6 +96,7 @@ export default function Behavior() {
             <DistList title={t("platforms")} items={data.platforms} />
             <DistList title={t("countries")} items={data.countries} />
           </div>
+          <Habits />
         </>
       )}
     </div>

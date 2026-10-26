@@ -282,3 +282,115 @@ function summarize(all: Play[], f: Filter, per: Period): PeriodSummary {
 }
 
 export const compare = (all: Play[], f: Filter, a: Period, b: Period): [PeriodSummary, PeriodSummary] => [summarize(all, f, a), summarize(all, f, b)];
+
+// ---------- skip & repeat habits ----------
+export interface HabitItem {
+  key: string;
+  title: string;
+  subtitle: string;
+  uri: string;
+  /** skip rate (0..1) for skip lists, number of times for repeats / album runs */
+  value: number;
+  total: number;
+}
+
+export interface HabitsData {
+  skipRateShuffle: number;
+  skipRateDirect: number;
+  skippedTracks: HabitItem[];
+  skippedArtists: HabitItem[];
+  repeats: HabitItem[];
+  albumRuns: HabitItem[];
+}
+
+const MIN_TRACK_ENTRIES = 10;
+const MIN_ARTIST_ENTRIES = 40;
+/** a replay counts when the same track starts again within this gap */
+const REPEAT_GAP_MS = 60_000;
+/** plays closer together than this belong to one listening run */
+const RUN_GAP_MS = 5 * 60_000;
+const MIN_ALBUM_RUN = 5;
+
+export function habits(all: Play[], f: Filter): HabitsData {
+  const list = tracksOf(all)
+    .filter((p) => (f.from === null || p.start >= f.from) && (f.to === null || p.start < f.to))
+    .sort((a, b) => a.start - b.start);
+
+  let shuffle = 0;
+  let shuffleSkipped = 0;
+  let direct = 0;
+  let directSkipped = 0;
+  const byTrack = new Map<string, { title: string; artist: string; n: number; skipped: number }>();
+  const byArtist = new Map<string, { n: number; skipped: number; uri: string }>();
+  const repeats = new Map<string, { title: string; artist: string; n: number }>();
+  const runs = new Map<string, { album: string; artist: string; uri: string; n: number }>();
+
+  let prev: Play | null = null;
+  let run: Play[] = [];
+  const flush = () => {
+    // a run counts as "album listened through" when most of it is one album and hardly skipped
+    if (run.length >= MIN_ALBUM_RUN) {
+      const first = run[0];
+      const same = run.filter((p) => p.album === first.album && p.artist === first.artist);
+      if (first.album && same.length >= MIN_ALBUM_RUN && same.length / run.length >= 0.8 && same.filter((p) => p.skipped).length / same.length < 0.3) {
+        const k = `${first.artist}|${first.album}`;
+        const e = runs.get(k) ?? { album: first.album, artist: first.artist, uri: first.uri, n: 0 };
+        e.n++;
+        runs.set(k, e);
+      }
+    }
+    run = [];
+  };
+
+  for (const p of list) {
+    if (p.shuffle) {
+      shuffle++;
+      if (p.skipped) shuffleSkipped++;
+    } else {
+      direct++;
+      if (p.skipped) directSkipped++;
+    }
+    const t = byTrack.get(p.uri) ?? { title: p.title, artist: p.artist, n: 0, skipped: 0 };
+    t.n++;
+    if (p.skipped) t.skipped++;
+    byTrack.set(p.uri, t);
+    const a = byArtist.get(p.artist) ?? { n: 0, skipped: 0, uri: p.uri };
+    a.n++;
+    if (p.skipped) a.skipped++;
+    byArtist.set(p.artist, a);
+
+    if (prev && prev.uri === p.uri && p.start - (prev.start + prev.ms) < REPEAT_GAP_MS) {
+      const r = repeats.get(p.uri) ?? { title: p.title, artist: p.artist, n: 0 };
+      r.n++;
+      repeats.set(p.uri, r);
+    }
+    if (prev && p.start - (prev.start + prev.ms) > RUN_GAP_MS) flush();
+    run.push(p);
+    prev = p;
+  }
+  flush();
+
+  const item = (key: string, title: string, subtitle: string, uri: string, value: number, total: number): HabitItem => ({ key, title, subtitle, uri, value, total });
+  return {
+    skipRateShuffle: shuffle ? shuffleSkipped / shuffle : 0,
+    skipRateDirect: direct ? directSkipped / direct : 0,
+    skippedTracks: [...byTrack.entries()]
+      .filter(([, t]) => t.n >= MIN_TRACK_ENTRIES)
+      .sort((a, b) => b[1].skipped / b[1].n - a[1].skipped / a[1].n || b[1].n - a[1].n)
+      .slice(0, 10)
+      .map(([uri, t]) => item(uri, t.title, t.artist, uri, t.skipped / t.n, t.n)),
+    skippedArtists: [...byArtist.entries()]
+      .filter(([, a]) => a.n >= MIN_ARTIST_ENTRIES)
+      .sort((a, b) => b[1].skipped / b[1].n - a[1].skipped / a[1].n)
+      .slice(0, 10)
+      .map(([name, a]) => item(name, name, "", a.uri, a.skipped / a.n, a.n)),
+    repeats: [...repeats.entries()]
+      .sort((a, b) => b[1].n - a[1].n)
+      .slice(0, 10)
+      .map(([uri, r]) => item(uri, r.title, r.artist, uri, r.n, r.n)),
+    albumRuns: [...runs.entries()]
+      .sort((a, b) => b[1].n - a[1].n)
+      .slice(0, 10)
+      .map(([k, r]) => item(k, r.album, r.artist, r.uri, r.n, r.n)),
+  };
+}

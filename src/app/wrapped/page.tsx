@@ -280,7 +280,7 @@ export default function Wrapped() {
     : { background: "radial-gradient(120% 70% at 85% 0%, color-mix(in srgb, var(--accent) 38%, transparent), transparent 60%), var(--bg)" }) as CSSProperties;
 
   return (
-    <div data-theme={style} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90" style={{ ...toneVars, fontFamily: "var(--font-body)" }}>
+    <div data-no-ptr data-theme={style} className="fixed inset-0 z-50 flex items-center justify-center bg-black/90" style={{ ...toneVars, fontFamily: "var(--font-body)" }}>
       {!data || !cur ? (
         <p className="text-muted">{t("loading")}</p>
       ) : (
