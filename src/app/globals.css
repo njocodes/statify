@@ -203,7 +203,7 @@
   }
 }
 [data-theme="clean"] button.rounded-full,
-[data-theme="clean"] a.rounded-full {
+[data-theme="clean"] :not(nav) > a.rounded-full {
   border-width: 1px;
   border-color: var(--border);
 }
