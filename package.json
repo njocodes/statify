@@ -1,7 +1,25 @@
 {
   "name": "statify",
   "version": "0.1.0",
+  "description": "Explore your Spotify extended streaming history in the browser. Private, static, no uploads.",
+  "license": "MIT",
   "private": true,
+  "homepage": "https://statify.njo.quest",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/njocodes/statify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/njocodes/statify/issues"
+  },
+  "keywords": [
+    "spotify",
+    "streaming-history",
+    "stats",
+    "nextjs",
+    "pwa",
+    "privacy"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
