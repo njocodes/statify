@@ -6,6 +6,7 @@ import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
 import { dominantGenre, hatOf, moodOf, secondaryGenre, type GenreMix, type Hat, type Mood } from "../theme/genres";
 import { GENRE_COLOR, GENRE_THEME, isThemeId, type ThemeId, type ThemeSetting } from "../theme/themes";
+import { accentTokens, type Rgb } from "../theme/coverColor";
 import { dicts, type Key, type Lang } from "../i18n/dict";
 
 type DistributiveOmit<T, K extends keyof never> = T extends unknown ? Omit<T, K> : never;
@@ -16,6 +17,7 @@ interface Settings {
   tz: string;
   minPlayMs: number;
   theme: ThemeSetting;
+  coverAccent: boolean;
 }
 
 interface Ctx {
@@ -29,6 +31,8 @@ interface Ctx {
   /** how Statty looks, derived from the listening history */
   mascot: { mood: Mood; hat: Hat };
   setSettings: (s: Partial<Settings>) => void;
+  /** colour taken from the top album covers, applied as accent while the setting is on */
+  setCoverColor: (c: Rgb | null) => void;
   t: (k: Key) => string;
   ingest: (files: File[], onProgress?: (done: number, total: number) => void) => Promise<IngestRes>;
   clear: () => Promise<void>;
@@ -46,7 +50,7 @@ export const useStatify = () => {
 };
 
 const defaultTz = () => Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
-const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto" });
+const initialSettings = (): Settings => ({ lang: "en", tz: "UTC", minPlayMs: DEFAULT_MIN_PLAY_MS, theme: "auto", coverAccent: true });
 
 export function StatifyProvider({ children }: { children: ReactNode }) {
   const worker = useRef<Worker | null>(null);
@@ -57,6 +61,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   const [extent, setExtent] = useState<Extent | null>(null);
   const [settings, setS] = useState<Settings>(initialSettings);
   const [autoTheme, setAutoTheme] = useState<ThemeId>("classic");
+  const [coverColor, setCoverColorState] = useState<Rgb | null>(null);
   const [genreMix, setGenreMix] = useState<GenreMix | null>(null);
 
   const call = useCallback(<T extends Res>(req: DistributiveOmit<Req, "id">): Promise<T> => {
@@ -76,7 +81,11 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     const theme: ThemeSetting = stored.theme === "auto" || isThemeId(stored.theme) ? stored.theme : "auto";
     // Settings live in localStorage, so they can only be read after hydration.
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme });
+    setS({ lang, tz: stored.tz ?? defaultTz(), minPlayMs: stored.minPlayMs ?? DEFAULT_MIN_PLAY_MS, theme, coverAccent: stored.coverAccent ?? true });
+    try {
+      const c = JSON.parse(localStorage.getItem("statify.coverColor") ?? "null");
+      if (c && typeof c.r === "number") setCoverColorState(c);
+    } catch {}
     try {
       const cached = localStorage.getItem("statify.autoTheme");
       if (isThemeId(cached)) setAutoTheme(cached);
@@ -98,6 +107,14 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       .finally(() => setReady(true));
     return () => w.terminate();
   }, [call]);
+
+  const setCoverColor = useCallback((c: Rgb | null) => {
+    setCoverColorState(c);
+    try {
+      if (c) localStorage.setItem("statify.coverColor", JSON.stringify(c));
+      else localStorage.removeItem("statify.coverColor");
+    } catch {}
+  }, []);
 
   const setSettings = useCallback((s: Partial<Settings>) => {
     setS((cur) => {
@@ -154,6 +171,17 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   }, [genreMix]);
 
   const theme: ThemeId = settings.theme === "auto" ? autoTheme : settings.theme;
+  // accent from album covers; the clean theme stays strictly black/white
+  useEffect(() => {
+    const root = document.documentElement.style;
+    const names = ["--accent", "--accent-dim", "--on-accent"];
+    if (!coverColor || !settings.coverAccent || theme === "clean") return names.forEach((n) => root.removeProperty(n));
+    const k = accentTokens(coverColor);
+    root.setProperty("--accent", k.accent);
+    root.setProperty("--accent-dim", k.dim);
+    root.setProperty("--on-accent", k.on);
+  }, [coverColor, settings.coverAccent, theme]);
+
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
   }, [theme]);
@@ -170,6 +198,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       genreMix,
       mascot,
       setSettings,
+      setCoverColor,
       t: (k) => dicts[settings.lang][k],
       ingest: async (files, onProgress) => {
         progress.current = onProgress;
@@ -208,7 +237,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ready, extent, settings, theme, autoTheme, genreMix, mascot, setSettings, call],
+    [ready, extent, settings, theme, autoTheme, genreMix, mascot, setSettings, setCoverColor, call],
   );
 
   return <C.Provider value={value}>{children}</C.Provider>;

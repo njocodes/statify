@@ -55,6 +55,16 @@ export default function Settings() {
         )}
       </section>
 
+      <section className="card p-4">
+        <label className="flex cursor-pointer items-start gap-3">
+          <input type="checkbox" checked={settings.coverAccent} onChange={(e) => setSettings({ coverAccent: e.target.checked })} className="mt-1.5 accent-[var(--accent)]" />
+          <span>
+            <span className="display text-xl">{t("coverAccent")}</span>
+            <span className="block text-sm text-muted">{t("coverAccentSub")}</span>
+          </span>
+        </label>
+      </section>
+
       <section className="space-y-3">
         <div>
           <h2 className="text-xl">{t("designManual")}</h2>

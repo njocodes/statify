@@ -4,7 +4,7 @@ import { getCover, putCover } from "@/lib/store/db";
 
 const mem = new Map<string, Promise<string | null>>();
 
-function fetchCover(uri: string): Promise<string | null> {
+export function fetchCover(uri: string): Promise<string | null> {
   let p = mem.get(uri);
   if (!p) {
     p = (async () => {

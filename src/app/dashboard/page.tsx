@@ -1,16 +1,39 @@
 "use client";
+import { useEffect } from "react";
 import { EmptyNotice } from "@/components/EmptyNotice";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { useDashboard } from "@/lib/store/useDashboard";
 import { FilterBar } from "@/components/FilterBar";
 import { Stat } from "@/components/Stat";
 import { TopList } from "@/components/TopList";
+import { fetchCover } from "@/components/Cover";
+import { blend, dominantColor, loadForPixels, type Rgb } from "@/lib/theme/coverColor";
 import { DAYS_PER_MONTH, fmtDec, fmtInt, hours } from "@/lib/format";
 
 export default function Dashboard() {
-  const { t, settings } = useStatify();
+  const { t, settings, setCoverColor } = useStatify();
   const { year, setYear, data, ready, hasData, years } = useDashboard();
   const L = settings.lang;
+
+  // The all-time top covers decide the accent colour (only when no year filter is active).
+  const topUris = year === null && data ? data.top.tracks.plays.slice(0, 6).map((x) => x.uri).join(",") : "";
+  useEffect(() => {
+    if (!topUris) return;
+    let off = false;
+    (async () => {
+      const found: Rgb[] = [];
+      for (const uri of topUris.split(",")) {
+        const url = await fetchCover(uri);
+        const img = url ? await loadForPixels(url) : null;
+        const c = img && dominantColor(img);
+        if (c) found.push(c);
+      }
+      if (!off && found.length) setCoverColor(blend(found));
+    })();
+    return () => {
+      off = true;
+    };
+  }, [topUris, setCoverColor]);
 
   if (ready && !hasData) return <EmptyNotice />;
 
