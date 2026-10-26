@@ -276,6 +276,10 @@ button:active { transform: scale(0.96); transition-duration: 0.05s; }
 .stagger > :nth-child(1) { --i: 0; } .stagger > :nth-child(2) { --i: 1; } .stagger > :nth-child(3) { --i: 2; } .stagger > :nth-child(4) { --i: 3; }
 .stagger > :nth-child(5) { --i: 4; } .stagger > :nth-child(6) { --i: 5; } .stagger > :nth-child(7) { --i: 6; } .stagger > :nth-child(n+8) { --i: 7; }
 
+/* stacked bars are revealed left to right */
+@keyframes wipe { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.wipe { animation: wipe 0.8s var(--ease-spring) backwards; }
+
 /* the mascot blinks now and then */
 @keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.08); } }
 .blink { transform-box: fill-box; transform-origin: center; animation: blink 5.5s infinite; }

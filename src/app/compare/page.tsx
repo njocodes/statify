@@ -29,7 +29,7 @@ function Delta({ a, b }: { a: number | null; b: number }) {
 function GenreBar({ s }: { s: PeriodSummary }) {
   const total = s.matchedMs || 1;
   return (
-    <div className="flex h-2.5 overflow-hidden rounded-full" style={{ background: "var(--surface-2)" }}>
+    <div className="wipe flex h-2.5 overflow-hidden rounded-full" style={{ background: "var(--surface-2)" }}>
       {GENRES.filter((g) => s.genres[g]).map((g) => (
         <div key={g} style={{ width: `${((s.genres[g] ?? 0) / total) * 100}%`, background: GENRE_COLOR[g] }} />
       ))}
@@ -87,8 +87,8 @@ export default function Compare() {
   const chart = (rows ?? []).map((r) => ({ year: r.year, value: Math.round(m.get(r.s) * 10) / 10 }));
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-3 gap-3">
+    <div className="stagger space-y-5">
+      <div className="stagger grid grid-cols-3 gap-3">
         {yearSel(y0, setFrom, t("cmpFrom"))}
         {yearSel(y1, setTo, t("cmpTo"))}
         <label className="block space-y-1">

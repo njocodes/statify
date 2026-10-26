@@ -67,13 +67,13 @@ export default function Behavior() {
   const pct = (x: number) => `${Math.round(x * 100)} %`;
   if (ready && !hasData) return <EmptyNotice />;
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
         <Skeleton />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <div className="stagger grid grid-cols-2 gap-3 md:grid-cols-4">
             <Stat label={t("skipped")} value={pct(data.skipRate)} />
             <Stat label={t("shuffleShare")} value={pct(data.shuffleShare)} />
             <Stat label={t("offlineShare")} value={pct(data.offlineShare)} />
@@ -85,13 +85,13 @@ export default function Behavior() {
               {data.skipByYear.map((y) => (
                 <div key={y.year} className="flex flex-1 flex-col items-center gap-1">
                   <span className="text-xs tabular-nums text-muted">{pct(y.rate)}</span>
-                  <div className="w-full rounded-t bg-accent" style={{ height: `${Math.max(4, y.rate * 160)}px` }} />
+                  <div className="growY w-full rounded-t bg-accent" style={{ height: `${Math.max(4, y.rate * 160)}px` }} />
                   <span className="text-xs text-muted">{y.year}</span>
                 </div>
               ))}
             </div>
           </section>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="stagger grid grid-cols-1 gap-4 md:grid-cols-2">
             <DistList title={t("startReasons")} items={data.startReasons} reasons />
             <DistList title={t("endReasons")} items={data.endReasons} reasons />
             <DistList title={t("platforms")} items={data.platforms} />

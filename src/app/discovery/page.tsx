@@ -19,7 +19,7 @@ export default function Discovery() {
   if (ready && !hasData) return <EmptyNotice />;
   const L = settings.lang;
   return (
-    <div className="space-y-6">
+    <div className="stagger space-y-6">
       <FilterBar year={year} setYear={setYear} years={years} />
       {!data ? (
         <Skeleton />
@@ -78,7 +78,7 @@ export default function Discovery() {
               ))}
             </ul>
           </section>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
             <section className="card p-4">
               <h2 className="mb-3 font-semibold">{t("discoveries")}</h2>
               <ol className="space-y-1 text-sm">

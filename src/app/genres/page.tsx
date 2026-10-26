@@ -32,7 +32,7 @@ function YearBars({ data, label }: { data: GenreStats; label: (id: string, genre
           <div key={y}>
             <button type="button" aria-expanded={isOpen} onClick={() => setOpen(isOpen ? null : y)} className="flex w-full items-center gap-2 rounded-md text-left active:opacity-80">
               <span className={`w-9 shrink-0 text-xs ${isOpen ? "font-semibold text-fg" : "text-muted"}`}>{y}</span>
-              <div className="flex h-5 min-w-0 flex-1 overflow-hidden rounded-md" style={{ background: "var(--surface-2)" }}>
+              <div className="wipe flex h-5 min-w-0 flex-1 overflow-hidden rounded-md" style={{ background: "var(--surface-2)", animationDelay: `${data.years.indexOf(y) * 60}ms` }}>
                 {GENRES.filter((g) => row[g]).map((g) => {
                   const subs = Object.entries(data.yearlySubs[y]?.[g] ?? {}).sort((a, b) => b[1] - a[1]);
                   return (
@@ -90,7 +90,7 @@ export default function Genres() {
   const label = (id: string, genre: Genre) => (id === genre ? `${t(`genre_${genre}`)} · ${t("gnOther")}` : t(`sub_${id}` as never));
   const shown = data?.rows.filter((r) => r.ms / (data.matchedMs || 1) >= 0.01) ?? [];
   return (
-    <div className="space-y-5">
+    <div className="stagger space-y-5">
       {!data ? (
         <Skeleton />
       ) : !shown.length ? (
@@ -109,7 +109,7 @@ export default function Genres() {
               ))}
             </div>
           </section>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
             {shown.map((r) => (
               <section key={r.genre} className="card min-w-0 space-y-3 p-4">
                 <div className="flex items-baseline justify-between gap-2">
@@ -139,7 +139,7 @@ export default function Genres() {
                           <span className="shrink-0 text-muted">{fmtDec(hoursOf(s.ms), L)} h</span>
                         </div>
                         <div className="h-1.5 rounded-full" style={{ background: "var(--surface-2)" }}>
-                          <div className="h-1.5 rounded-full" style={{ width: `${(s.ms / r.ms) * 100}%`, background: GENRE_COLOR[r.genre] }} />
+                          <div className="grow h-1.5 rounded-full" style={{ width: `${(s.ms / r.ms) * 100}%`, background: GENRE_COLOR[r.genre] }} />
                         </div>
                       </div>
                     ))}

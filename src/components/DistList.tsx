@@ -21,7 +21,7 @@ export function DistList({ title, items, reasons = false, limit = 8 }: { title: 
               </span>
             </div>
             <div className="mt-1 h-1.5 rounded-full bg-surface2">
-              <div className="h-1.5 rounded-full bg-accent" style={{ width: `${(d.ms / (items[0]?.ms || 1)) * 100}%` }} />
+              <div className="grow h-1.5 rounded-full bg-accent" style={{ width: `${(d.ms / (items[0]?.ms || 1)) * 100}%` }} />
             </div>
           </li>
         ))}

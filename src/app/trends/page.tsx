@@ -102,7 +102,7 @@ export default function Trends() {
   const type = kind === "artists" ? "artist" : "track";
   const lang = settings.lang;
   return (
-    <div className="space-y-5">
+    <div className="stagger space-y-5">
       <div className="flex flex-wrap items-center gap-3">
         <Segmented value={w} onChange={setW} options={TREND_WINDOWS.map((x) => [x, t(`trWindow${x}` as Key)] as [TrendWindow, string])} />
         <Segmented value={kind} onChange={setKind} options={[["artists", t("trArtists")], ["tracks", t("trTracks")]]} />
@@ -111,7 +111,7 @@ export default function Trends() {
       {!g ? (
         <Skeleton />
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="stagger grid grid-cols-1 gap-4 lg:grid-cols-2">
           <Section title={t("trRising")} items={g.rising} type={type} mode="up" lang={lang} />
           <Section title={t("trFalling")} items={g.falling} type={type} mode="down" lang={lang} />
           <Section title={t("trNew")} items={g.newcomers} type={type} mode="new" lang={lang} />
