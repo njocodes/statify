@@ -47,4 +47,5 @@ export const THEME_LABEL: Record<ThemeId, { de: string; en: string; blurb: { de:
   riso: { de: "Risograph-Druck", en: "Risograph print", blurb: { de: "Versetzte Farbebenen, Halbton", en: "Misregistered inks, halftone" } },
 };
 
+export const isGenre = (v: unknown): v is Genre => GENRES.includes(v as Genre);
 export const isThemeId = (v: unknown): v is ThemeId => THEME_IDS.includes(v as ThemeId);

@@ -40,6 +40,9 @@ interface Ctx {
   t: (k: Key) => string;
   ingest: (files: File[], onProgress?: (done: number, total: number) => void) => Promise<IngestRes>;
   clear: () => Promise<void>;
+  /** opt-in: asks MusicBrainz about the most-played artists the built-in lists do not know */
+  lookupGenres: (limit: number, onProgress?: (done: number, total: number) => void) => Promise<{ found: number; checked: number; cancelled: boolean }>;
+  cancelLookup: () => void;
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
   detail: (entity: EntityType, key: string) => Promise<Detail | null>;
   search: (q: string) => Promise<SearchHit[]>;
@@ -70,6 +73,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   const [year, setYear] = useState<number | null>(null);
   const [coverColor, setCoverColorState] = useState<Rgb | null>(null);
   const [genreMix, setGenreMix] = useState<GenreMix | null>(null);
+  const [genreRev, setGenreRev] = useState(0);
 
   const call = useCallback(<T extends Res>(req: DistributiveOmit<Req, "id">): Promise<T> => {
     return new Promise((resolve, reject) => {
@@ -163,7 +167,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
     return () => {
       off = true;
     };
-  }, [ready, extent, call]);
+  }, [ready, extent, call, genreRev]);
 
   const mascot = useMemo(
     () => ({ mood: genreMix ? moodOf(genreMix) : ("happy" as Mood), hat: hatOf(genreMix ? dominantGenre(genreMix) : null) }),
@@ -220,6 +224,17 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
         await call({ type: "clear" });
         setExtent({ first: null, last: null, years: [], counts: { track: 0, episode: 0, audiobook: 0 } });
       },
+      lookupGenres: async (limit, onProgress) => {
+        progress.current = onProgress;
+        try {
+          const r = await call<Extract<Res, { type: "lookup" }>>({ type: "lookup", limit });
+          if (r.found) setGenreRev((n) => n + 1);
+          return { found: r.found, checked: r.checked, cancelled: r.cancelled };
+        } finally {
+          progress.current = undefined;
+        }
+      },
+      cancelLookup: () => void call({ type: "lookupCancel" }),
       dashboard: async (f) => {
         const r = await call<Extract<Res, { type: "dashboard" }>>({
           type: "dashboard",

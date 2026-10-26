@@ -1,13 +1,14 @@
 /// <reference lib="webworker" />
 import { ingest, type IngestResult } from "../parse/ingest";
 import { dedupeKey, type Play } from "../parse/normalize";
-import { appendPlays, clearAll, loadPlays } from "../store/db";
+import { appendPlays, clearAll, loadGenreCache, loadPlays, putGenre } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
 import { trends, type TrendsData } from "../stats/trends";
 import { compare, genreStats, habits, type HabitsData, milestones, onThisDay, phases, type DayYear, type GenreStats, type Milestone, type Period, type Phase, type PeriodSummary } from "../stats/extras";
 import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
-import { genreOf, type GenreMix } from "../theme/genres";
+import { genreFromTags, genreOf, normalize, setExtraGenre, type GenreMix } from "../theme/genres";
+import { isGenre } from "../theme/themes";
 import { dayKey, parts } from "../stats/core";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
 
@@ -21,6 +22,8 @@ export type Req =
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
   | { id: number; type: "search"; q: string; filter: Filter }
   | { id: number; type: "genres" }
+  | { id: number; type: "lookup"; limit: number }
+  | { id: number; type: "lookupCancel" }
   | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts" | "trends" | "genres" | "phases" | "milestones" | "habits"; filter: Filter }
   | { id: number; type: "onThisDay"; filter: Filter; md: string }
   | { id: number; type: "compare"; filter: Filter; a: Period; b: Period };
@@ -42,6 +45,8 @@ export type Res =
   | { id: number; ok: true; type: "detail"; data: Detail | null }
   | { id: number; ok: true; type: "search"; hits: SearchHit[] }
   | { id: number; ok: true; type: "genres"; mix: GenreMix }
+  | { id: number; ok: true; type: "lookup"; found: number; checked: number; cancelled: boolean }
+  | { id: number; ok: true; type: "lookupCancel" }
   | { id: number; ok: true; type: "view"; data: ViewData }
   | { id: number; ok: true; type: "onThisDay"; days: DayYear[] }
   | { id: number; ok: true; type: "compare"; data: [PeriodSummary, PeriodSummary] }
@@ -53,6 +58,20 @@ let known = new Set<string>();
 let tz = "UTC";
 let index: ReturnType<typeof buildIndex> | null = null;
 let indexMin = -1;
+let cancelLookup = false;
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Asks MusicBrainz about one artist; only an exact name match with a high score counts. */
+async function musicBrainzGenre(artist: string) {
+  const q = encodeURIComponent(`artist:"${artist.replace(/["\\]/g, " ")}"`);
+  const res = await fetch(`https://musicbrainz.org/ws/2/artist/?query=${q}&fmt=json&limit=1`);
+  if (res.status === 503 || res.status === 429) throw new Error("rate-limited");
+  if (!res.ok) throw new Error(`musicbrainz ${res.status}`);
+  const hit = ((await res.json()) as { artists?: { name: string; score: number; tags?: { name: string; count: number }[] }[] }).artists?.[0];
+  if (!hit || hit.score < 90 || normalize(hit.name) !== normalize(artist)) return null;
+  return genreFromTags(hit.tags ?? []);
+}
 
 const post = (m: Res) => (self as unknown as Worker).postMessage(m);
 
@@ -64,6 +83,7 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         plays = await loadPlays();
         index = null;
         known = new Set(plays.map(dedupeKey));
+        for (const [k, g] of await loadGenreCache()) if (g && isGenre(g)) setExtraGenre(k, g);
         post({ id: r.id, ok: true, type: "load", extent: extent(plays, tz) });
         break;
       }
@@ -166,6 +186,46 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
         const mix = done(total);
         mix.yearly = Object.fromEntries([...years].map(([y, acc]) => [y, done(acc)]));
         post({ id: r.id, ok: true, type: "genres", mix });
+        break;
+      }
+      case "lookupCancel": {
+        cancelLookup = true;
+        post({ id: r.id, ok: true, type: "lookupCancel" });
+        break;
+      }
+      case "lookup": {
+        cancelLookup = false;
+        // the most-listened artists the curated lists do not know yet, skipping ones already asked about
+        const cached = await loadGenreCache();
+        const ms = new Map<string, { name: string; ms: number }>();
+        for (const p of plays) {
+          if (p.kind !== "track" || !p.artist) continue;
+          const key = normalize(p.artist);
+          if (!key || cached.has(key) || genreOf(p.artist)) continue;
+          const cur = ms.get(key);
+          if (cur) cur.ms += p.ms;
+          else ms.set(key, { name: p.artist, ms: p.ms });
+        }
+        const todo = [...ms].sort((a, b) => b[1].ms - a[1].ms).slice(0, r.limit);
+        let found = 0;
+        let checked = 0;
+        for (const [key, a] of todo) {
+          if (cancelLookup) break;
+          try {
+            const g = await musicBrainzGenre(a.name);
+            await putGenre(key, g);
+            if (g) {
+              setExtraGenre(key, g);
+              found++;
+            }
+          } catch (e) {
+            if (e instanceof Error && e.message === "rate-limited") await sleep(5000);
+            else if (!(e instanceof Error) || !/musicbrainz/.test(e.message)) break; // offline: stop, keep what we have
+          }
+          post({ id: -1, progress: { done: ++checked, total: todo.length } });
+          await sleep(1100); // MusicBrainz allows about one request per second
+        }
+        post({ id: r.id, ok: true, type: "lookup", found, checked, cancelled: cancelLookup });
         break;
       }
       case "search": {

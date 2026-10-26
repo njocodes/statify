@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useStatify } from "@/lib/store/StatifyProvider";
 import { GENRES, THEME_IDS, THEME_LABEL, type ThemeId } from "@/lib/theme/themes";
 import { Mascot } from "@/components/Mascot";
@@ -19,7 +20,8 @@ function Preview({ id }: { id: ThemeId }) {
 }
 
 export default function Settings() {
-  const { t, settings, setSettings, autoTheme, theme, genreMix, extent } = useStatify();
+  const { t, settings, setSettings, autoTheme, theme, genreMix, extent, lookupGenres, cancelLookup } = useStatify();
+  const [mb, setMb] = useState<{ running: boolean; done: number; total: number; result?: string }>({ running: false, done: 0, total: 0 });
   const lang = settings.lang;
   const hasData = !!extent?.first;
   const coverage = genreMix?.totalMs ? Math.round((genreMix.matchedMs / genreMix.totalMs) * 100) : 0;
@@ -54,6 +56,37 @@ export default function Settings() {
           </div>
         )}
       </section>
+
+      {hasData && (
+        <section className="card space-y-3 p-4">
+          <div>
+            <h2 className="display text-xl">{t("mbTitle")}</h2>
+            <p className="text-sm text-muted">{t("mbSub")}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            {mb.running ? (
+              <button onClick={cancelLookup} className="rounded-full border border-line px-4 py-1.5 text-sm">{t("mbStop")}</button>
+            ) : (
+              <button
+                onClick={async () => {
+                  setMb({ running: true, done: 0, total: 0 });
+                  const r = await lookupGenres(300, (done, total) => setMb({ running: true, done, total })).catch(() => ({ found: 0, checked: 0, cancelled: false }));
+                  setMb({ running: false, done: 0, total: 0, result: t("mbDone").replace("{n}", String(r.found)).replace("{m}", String(r.checked)) });
+                }}
+                className="rounded-full bg-accent px-4 py-1.5 text-sm text-onaccent"
+              >
+                {t("mbStart")}
+              </button>
+            )}
+            {mb.running && (
+              <span className="text-sm text-muted" role="status">
+                {t("mbRunning")} {mb.done}/{mb.total || "…"}
+              </span>
+            )}
+            {!mb.running && mb.result && <span className="text-sm text-muted" role="status">{mb.result}</span>}
+          </div>
+        </section>
+      )}
 
       <section className="card p-4">
         <label className="flex cursor-pointer items-start gap-3">

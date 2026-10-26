@@ -46,10 +46,44 @@ const KEYWORDS: [RegExp, Genre][] = [
   [/\b(band|metal|punk)\b/, "rock"],
 ];
 
+// Genres found by the optional MusicBrainz lookup; they fill gaps but never override the curated lists.
+const EXTRA = new Map<string, Genre>();
+export function setExtraGenre(key: string, genre: Genre) {
+  EXTRA.set(key, genre);
+}
+
+// MusicBrainz tag -> genre; the first matching rule per tag counts, specific rules come first.
+const TAG_RULES: [RegExp, Genre][] = [
+  [/metal/, "metal"],
+  [/techno|minimal|tech house/, "techno"],
+  [/hip.?hop|\brap\b|trap|drill/, "rap"],
+  [/r&b|rnb|rhythm and blues|\bsoul\b/, "rnb"],
+  [/ambient|new age|neoclassical|drone/, "ambient"],
+  [/electro|house|edm|trance|dubstep|drum and bass|dance|synthwave|downtempo/, "electronic"],
+  [/jazz|swing|bebop/, "jazz"],
+  [/classical|orchestra|opera|baroque|symphon|soundtrack|score/, "klassik"],
+  [/country|bluegrass|americana/, "country"],
+  [/folk|singer.?songwriter/, "folk"],
+  [/indie|shoegaze|dream pop|lo-?fi/, "indie"],
+  [/rock|punk|grunge|hardcore|emo/, "rock"],
+  [/audiobook|spoken|h[oö]rspiel|children/, "hoerspiel"],
+  [/\bpop\b|k-pop|synth-?pop/, "pop"],
+];
+
+/** Picks the genre with the most tag votes. */
+export function genreFromTags(tags: { name: string; count: number }[]): Genre | null {
+  const votes = new Map<Genre, number>();
+  for (const t of tags) {
+    const rule = TAG_RULES.find(([re]) => re.test(t.name.toLowerCase()));
+    if (rule) votes.set(rule[1], (votes.get(rule[1]) ?? 0) + Math.max(1, t.count));
+  }
+  return [...votes].sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
+}
+
 export function genreOf(artist: string): Genre | null {
   const key = normalize(artist);
   if (!key) return null;
-  const hit = INDEX.get(key);
+  const hit = INDEX.get(key) ?? EXTRA.get(key);
   if (hit) return hit;
   for (const [re, g] of KEYWORDS) if (re.test(key)) return g;
   return null;
