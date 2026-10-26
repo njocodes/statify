@@ -63,6 +63,19 @@ const en = {
   listened: "Listened",
   notFound: "Not found in your data.",
   back: "Back",
+  nav_behavior: "Behavior", nav_discovery: "Discovery", nav_podcasts: "Podcasts",
+  skipped: "Skipped", shuffleShare: "Shuffle", offlineShare: "Offline", incognito: "Private session plays",
+  startReasons: "How tracks start", endReasons: "How tracks end", platforms: "Devices", countries: "Countries",
+  skipByYear: "Skip rate per year",
+  newArtists: "New artists per month", monthlyTop: "Top artist per month", rankByYear: "Artist ranking by year",
+  forgotten: "Forgotten favourites", forgottenSub: "Played a lot, not heard for over a year",
+  discoveries: "Discoveries in this period",
+  episodes: "Episodes", shows: "Top shows", episodeList: "Top episodes", audiobooks: "Audiobooks", video: "Video plays",
+  noPodcasts: "No podcasts in this period.",
+  reason_trackdone: "Track finished", reason_fwdbtn: "Skip forward", reason_backbtn: "Skip back", reason_clickrow: "Clicked in list",
+  reason_appload: "App start", reason_playbtn: "Play button", reason_remote: "Remote", reason_endplay: "Stopped",
+  reason_logout: "Logout", reason_trackerror: "Error", reason_unknown: "Unknown",
+  "reason_unexpected-exit": "App closed", "reason_unexpected-exit-while-paused": "Closed while paused",
 };
 
 const de: typeof en = {
@@ -128,7 +141,22 @@ const de: typeof en = {
   listened: "Gehört",
   notFound: "In deinen Daten nicht gefunden.",
   back: "Zurück",
+  nav_behavior: "Verhalten", nav_discovery: "Entdeckung", nav_podcasts: "Podcasts",
+  skipped: "Übersprungen", shuffleShare: "Shuffle", offlineShare: "Offline", incognito: "Plays in privater Sitzung",
+  startReasons: "Wie Titel starten", endReasons: "Wie Titel enden", platforms: "Geräte", countries: "Länder",
+  skipByYear: "Skip-Rate pro Jahr",
+  newArtists: "Neue Künstler pro Monat", monthlyTop: "Top-Künstler pro Monat", rankByYear: "Künstler-Ranking pro Jahr",
+  forgotten: "Vergessene Lieblingssongs", forgottenSub: "Oft gehört, seit über einem Jahr nicht mehr",
+  discoveries: "Entdeckungen in diesem Zeitraum",
+  episodes: "Folgen", shows: "Top-Shows", episodeList: "Top-Folgen", audiobooks: "Hörbücher", video: "Video-Wiedergaben",
+  noPodcasts: "Keine Podcasts in diesem Zeitraum.",
+  reason_trackdone: "Titel zu Ende", reason_fwdbtn: "Vorspulen/Skip", reason_backbtn: "Zurück", reason_clickrow: "In Liste angeklickt",
+  reason_appload: "App-Start", reason_playbtn: "Play-Taste", reason_remote: "Fernsteuerung", reason_endplay: "Gestoppt",
+  reason_logout: "Abmeldung", reason_trackerror: "Fehler", reason_unknown: "Unbekannt",
+  "reason_unexpected-exit": "App beendet", "reason_unexpected-exit-while-paused": "Pausiert beendet",
 };
 
 export const dicts = { en, de };
 export type Key = keyof typeof en;
+/** Look up a dynamic key, falling back to the raw value. */
+export const maybeKey = (lang: Lang, k: string): string => (dicts[lang] as Record<string, string>)[k] ?? k;

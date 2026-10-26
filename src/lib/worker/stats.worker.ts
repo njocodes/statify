@@ -4,7 +4,10 @@ import { dedupeKey, type Play } from "../parse/normalize";
 import { appendPlays, clearAll, loadPlays } from "../store/db";
 import { dashboard, extent, type DashboardData, type Extent } from "../stats/query";
 import type { Filter } from "../stats/core";
+import { behavior, discovery, podcasts, type BehaviorData, type DiscoveryData, type PodcastData } from "../stats/views";
 import { buildIndex, detail, search, type Detail, type EntityType, type SearchHit } from "../stats/detail";
+
+export type ViewData = BehaviorData | DiscoveryData | PodcastData;
 
 export type Req =
   | { id: number; type: "load" }
@@ -12,7 +15,8 @@ export type Req =
   | { id: number; type: "clear" }
   | { id: number; type: "dashboard"; filter: Filter; tz: string }
   | { id: number; type: "detail"; entity: EntityType; key: string; filter: Filter }
-  | { id: number; type: "search"; q: string; filter: Filter };
+  | { id: number; type: "search"; q: string; filter: Filter }
+  | { id: number; type: "view"; view: "behavior" | "discovery" | "podcasts"; filter: Filter };
 
 export type Res =
   | { id: number; ok: true; type: "load"; extent: Extent }
@@ -30,6 +34,7 @@ export type Res =
   | { id: number; ok: true; type: "dashboard"; data: DashboardData }
   | { id: number; ok: true; type: "detail"; data: Detail | null }
   | { id: number; ok: true; type: "search"; hits: SearchHit[] }
+  | { id: number; ok: true; type: "view"; data: ViewData }
   | { id: number; ok: false; error: string }
   | { id: -1; progress: { done: number; total: number } };
 
@@ -98,6 +103,11 @@ self.onmessage = async (ev: MessageEvent<Req>) => {
       }
       case "detail": {
         post({ id: r.id, ok: true, type: "detail", data: detail(plays, r.entity, r.key, r.filter) });
+        break;
+      }
+      case "view": {
+        const fn = { behavior, discovery, podcasts }[r.view];
+        post({ id: r.id, ok: true, type: "view", data: fn(plays, r.filter) });
         break;
       }
       case "search": {

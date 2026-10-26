@@ -9,7 +9,7 @@ export function Nav() {
   const path = usePathname();
   const hasData = !!extent?.first;
   const items = [
-    ...(hasData ? [{ href: "/dashboard/", label: t("nav_dashboard") }, { href: "/patterns/", label: t("nav_patterns") }] : []),
+    ...(hasData ? [{ href: "/dashboard/", label: t("nav_dashboard") }, { href: "/patterns/", label: t("nav_patterns") }, { href: "/behavior/", label: t("nav_behavior") }, { href: "/discovery/", label: t("nav_discovery") }, { href: "/podcasts/", label: t("nav_podcasts") }] : []),
     { href: "/", label: t("nav_upload") },
   ];
   return (

@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { Req, Res } from "../worker/stats.worker";
+import type { Req, Res, ViewData } from "../worker/stats.worker";
 import type { Extent, DashboardData } from "../stats/query";
 import { DEFAULT_MIN_PLAY_MS, type Filter } from "../stats/core";
 import type { Detail, EntityType, SearchHit } from "../stats/detail";
@@ -26,6 +26,7 @@ interface Ctx {
   dashboard: (f: Pick<Filter, "from" | "to">) => Promise<DashboardData>;
   detail: (entity: EntityType, key: string) => Promise<Detail | null>;
   search: (q: string) => Promise<SearchHit[]>;
+  view: <T extends ViewData>(view: "behavior" | "discovery" | "podcasts", f: Pick<Filter, "from" | "to">) => Promise<T>;
 }
 
 const C = createContext<Ctx | null>(null);
@@ -127,6 +128,14 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       detail: async (entity, key) => {
         const r = await call<Extract<Res, { type: "detail" }>>({ type: "detail", entity, key, filter: baseFilter });
         return r.data;
+      },
+      view: async <T extends ViewData>(view: "behavior" | "discovery" | "podcasts", f: Pick<Filter, "from" | "to">) => {
+        const r = await call<Extract<Res, { type: "view" }>>({
+          type: "view",
+          view,
+          filter: { ...f, minPlayMs: settings.minPlayMs, tz: settings.tz },
+        });
+        return r.data as T;
       },
       search: async (q) => {
         const r = await call<Extract<Res, { type: "search" }>>({ type: "search", q, filter: baseFilter });
