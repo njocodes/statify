@@ -2,6 +2,17 @@
 import { useEffect, useState } from "react";
 import { getCover, putCover } from "@/lib/store/db";
 
+// Only well-formed Spotify ids are sent out, and only thumbnails from Spotify's own CDNs are used.
+const TRACK_ID = /^[A-Za-z0-9]{22}$/;
+const trustedImage = (u: unknown): string | null => {
+  try {
+    const url = new URL(String(u));
+    return url.protocol === "https:" && /(^|\.)(scdn\.co|spotifycdn\.com)$/.test(url.hostname) ? url.href : null;
+  } catch {
+    return null;
+  }
+};
+
 const mem = new Map<string, Promise<string | null>>();
 
 export function fetchCover(uri: string): Promise<string | null> {
@@ -10,10 +21,11 @@ export function fetchCover(uri: string): Promise<string | null> {
     p = (async () => {
       const cached = await getCover(uri).catch(() => undefined);
       if (cached) return cached.url;
-      const id = uri.split(":")[2];
+      const id = uri.split(":")[2] ?? "";
+      if (!TRACK_ID.test(id)) return null;
       try {
         const r = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/track/${id}`)}`);
-        const url: string | null = r.ok ? ((await r.json()).thumbnail_url ?? null) : null;
+        const url = r.ok ? trustedImage((await r.json()).thumbnail_url) : null;
         await putCover(uri, url).catch(() => {});
         return url;
       } catch {
