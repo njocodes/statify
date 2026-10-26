@@ -5,8 +5,7 @@ import type { ViewData } from "../worker/stats.worker";
 import { yearStart } from "../format";
 
 export function useView<T extends ViewData>(name: "behavior" | "discovery" | "podcasts") {
-  const { ready, extent, view, settings } = useStatify();
-  const [year, setYear] = useState<number | null>(null);
+  const { ready, extent, view, settings, year, setYear } = useStatify();
   const [data, setData] = useState<T | null>(null);
 
   useEffect(() => {

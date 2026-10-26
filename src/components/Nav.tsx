@@ -6,6 +6,7 @@ import { useStatify } from "@/lib/store/StatifyProvider";
 import type { Key } from "@/lib/i18n/dict";
 import { SearchBox } from "./SearchBox";
 import { Logo } from "./Logo";
+import { PeriodPanel } from "./PeriodPanel";
 
 type Item = { href: string; key: Key; icon: ReactNode };
 
@@ -24,6 +25,8 @@ const PODCASTS: Item = { href: "/podcasts/", key: "nav_podcasts", icon: svg("M9 
 const UPLOAD: Item = { href: "/", key: "nav_upload", icon: svg("M12 16V4M7 9l5-5 5 5M5 20h14") };
 const SETTINGS: Item = { href: "/settings/", key: "nav_settings", icon: svg("M12 3a9 9 0 100 18c1.5 0 2-1 1.4-2-.6-1 0-2.2 1.2-2.2H17a4 4 0 004-4c0-5-4-9.8-9-9.8zM7.5 11h.01M10 7.5h.01M14.5 7.5h.01") };
 
+const FILTER_ICON = svg("M4 7h10M18 7h2M4 17h2M10 17h10M14 5v4M6 15v4");
+
 const slide = "transition-[transform,width] duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]";
 
 export function Nav() {
@@ -36,6 +39,7 @@ export function Nav() {
   const more = hasData ? [PODCASTS, WRAPPED, UPLOAD, SETTINGS] : [];
   const moreActive = more.some((i) => i.href === path);
   const [sheet, setSheet] = useState(false);
+  const [panel, setPanel] = useState(false);
 
   // Desktop: the sliding indicator follows the active link, measured so any label width works.
   const rail = useRef<HTMLElement>(null);
@@ -69,6 +73,11 @@ export function Nav() {
           </nav>
           <div className="hidden flex-1 sm:block" />
           {hasData && <SearchBox />}
+          {hasData && (
+            <button onClick={() => setPanel(true)} aria-label={t("filterTitle")} className="hidden shrink-0 rounded-full border border-line p-1.5 text-muted hover:text-fg sm:block">
+              {FILTER_ICON}
+            </button>
+          )}
           <button
             onClick={() => setSettings({ lang: settings.lang === "de" ? "en" : "de" })}
             className="ml-auto shrink-0 rounded-full border border-line px-3 py-1 text-xs text-muted hover:text-fg sm:ml-0"
@@ -91,6 +100,10 @@ export function Nav() {
                   {t(i.key)}
                 </Link>
               ))}
+              <button onClick={() => { setSheet(false); setPanel(true); }} className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm text-fg active:scale-[0.97]">
+                {FILTER_ICON}
+                {t("period")}
+              </button>
             </div>
           </>
         )}
@@ -110,6 +123,7 @@ export function Nav() {
           )}
         </nav>
       </div>
+      {panel && <PeriodPanel onClose={() => setPanel(false)} />}
     </>
   );
 }

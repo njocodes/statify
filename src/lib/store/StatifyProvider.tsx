@@ -31,6 +31,9 @@ interface Ctx {
   /** how Statty looks, derived from the listening history */
   mascot: { mood: Mood; hat: Hat };
   setSettings: (s: Partial<Settings>) => void;
+  /** selected calendar year for all views, null = all time (changed in the period panel) */
+  year: number | null;
+  setYear: (y: number | null) => void;
   /** colour taken from the top album covers, applied as accent while the setting is on */
   setCoverColor: (c: Rgb | null) => void;
   t: (k: Key) => string;
@@ -61,6 +64,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
   const [extent, setExtent] = useState<Extent | null>(null);
   const [settings, setS] = useState<Settings>(initialSettings);
   const [autoTheme, setAutoTheme] = useState<ThemeId>("classic");
+  const [year, setYear] = useState<number | null>(null);
   const [coverColor, setCoverColorState] = useState<Rgb | null>(null);
   const [genreMix, setGenreMix] = useState<GenreMix | null>(null);
 
@@ -197,6 +201,8 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       autoTheme,
       genreMix,
       mascot,
+      year,
+      setYear,
       setSettings,
       setCoverColor,
       t: (k) => dicts[settings.lang][k],
@@ -237,7 +243,7 @@ export function StatifyProvider({ children }: { children: ReactNode }) {
       },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ready, extent, settings, theme, autoTheme, genreMix, mascot, setSettings, setCoverColor, call],
+    [ready, extent, settings, theme, autoTheme, genreMix, mascot, year, setSettings, setCoverColor, call],
   );
 
   return <C.Provider value={value}>{children}</C.Provider>;

@@ -28,9 +28,11 @@ const elite = Special_Elite({ subsets: ["latin"], preload: false, weight: "400",
 export const metadata: Metadata = {
   title: { default: "Statify – your Spotify stats", template: "%s – Statify" },
   description: "Upload your Spotify extended streaming history and explore your stats. Everything is calculated in your browser.",
+  // home-screen app on iOS: no Safari bars, content runs under the status bar
+  appleWebApp: { capable: true, title: "Statify", statusBarStyle: "black-translucent" },
 };
 
-export const viewport: Viewport = { viewportFit: "cover" };
+export const viewport: Viewport = { viewportFit: "cover", themeColor: "#0b0d0c" };
 
 // Applies the saved/auto theme before first paint so there is no flash of the wrong design.
 const themeScript = `try{var s=JSON.parse(localStorage.getItem('statify.settings')||'{}');var t=s.theme&&s.theme!=='auto'?s.theme:localStorage.getItem('statify.autoTheme');if(t)document.documentElement.dataset.theme=t}catch(e){}`;

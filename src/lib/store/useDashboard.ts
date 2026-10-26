@@ -5,8 +5,7 @@ import type { DashboardData } from "../stats/query";
 import { yearStart } from "../format";
 
 export function useDashboard() {
-  const { ready, extent, dashboard, settings } = useStatify();
-  const [year, setYear] = useState<number | null>(null);
+  const { ready, extent, dashboard, settings, year, setYear } = useStatify();
   const [data, setData] = useState<DashboardData | null>(null);
 
   useEffect(() => {
