@@ -233,6 +233,60 @@ export default function Wrapped() {
             </div>
           ),
         },
+        {
+          tone: "dark",
+          node: (
+            <div className="flex h-full flex-col justify-center gap-4">
+              <div className="flex items-center justify-between">
+                <Label>{t("wrSummary")} · {scope}</Label>
+                <div className="pop"><Mascot size={44} look={look} /></div>
+              </div>
+              <div className="rise grid grid-cols-2 gap-3" style={rise(2)}>
+                <div>
+                  <div className="display text-4xl leading-none" style={{ color: "var(--accent)" }}>{fmtInt(hours(data.overview.totalMs), lang)}</div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted">{t("wrHours")}</div>
+                </div>
+                <div>
+                  <div className="display text-4xl leading-none" style={{ color: "var(--accent)" }}>{fmtInt(data.overview.plays, lang)}</div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-muted">{t("plays")}</div>
+                </div>
+              </div>
+              <div className="rise grid grid-cols-2 gap-4" style={rise(3)}>
+                {([["topArtists", data.top.artists.ms.slice(0, 5)], ["topTracks", data.top.tracks.plays.slice(0, 5)]] as const).map(([k, items]) => (
+                  <div key={k} className="min-w-0">
+                    <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">{t(k)}</div>
+                    <ol className="space-y-1.5">
+                      {items.map((it, n) => (
+                        <li key={it.key} className="flex min-w-0 gap-2 text-sm leading-tight">
+                          <span className="display w-4 shrink-0 text-right" style={{ color: "var(--accent)" }}>{n + 1}</span>
+                          <span className="min-w-0">
+                            <span className="block truncate font-semibold">{it.title}</span>
+                            {it.subtitle && <span className="block truncate text-xs text-muted">{it.subtitle}</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
+              </div>
+              <div className="rise grid grid-cols-3 gap-3 border-t pt-3 text-center" style={{ ...rise(4), borderColor: "var(--surface-2)" }}>
+                <div>
+                  <div className="display truncate text-lg leading-tight">{genre ? t(`genre_${genre}`) : "–"}</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-widest text-muted">{t("nav_genres")}</div>
+                </div>
+                <div>
+                  <div className="display text-lg leading-tight">{weekday(favDay)} {String(favHour).padStart(2, "0")}:00</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-widest text-muted">{t("wrFavDay")}</div>
+                </div>
+                <div>
+                  <div className="display text-lg leading-tight">{data.streak.longest} {t("days")}</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-widest text-muted">{t("streak")}</div>
+                </div>
+              </div>
+              <div className="logo display rise text-center text-lg opacity-70" style={rise(5)}>Statify</div>
+            </div>
+          ),
+        },
       ]
     : [];
 

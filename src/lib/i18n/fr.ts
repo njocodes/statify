@@ -175,6 +175,7 @@ export const fr: Record<Key, string> = {
   wrMoodHappy: "Toujours de bonne humeur",
   wrMoodGrumpy: "Un zappeur exigeant",
   wrMoodSleepy: "Un vrai oiseau de nuit",
+  wrSummary: "Votre résumé",
   wrOutro: "C'était votre Statify Wrapped",
   wrNext: "Touchez pour continuer",
   designTitle: "Design",
