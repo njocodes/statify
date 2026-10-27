@@ -17,7 +17,8 @@ Before opening a PR run `npm run typecheck && npm run lint && npm test`.
 - **Never commit streaming history** (or screenshots that show someone else's data).
 - Keep it static: no server routes or server-side compute.
 - Mobile first: no horizontal scroll at 390 px, respect safe areas and `prefers-reduced-motion`.
-- New UI text goes into both languages in `src/lib/i18n/dict.ts`.
+- New UI text goes into every language: `src/lib/i18n/dict.ts` (English, German), `es.ts` and `fr.ts`. TypeScript fails the build if a key is missing.
+- Be kind, see the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Add artists or genres
 
@@ -26,6 +27,10 @@ Genres come from curated lists in `src/lib/theme/genres.ts` (`LISTS`, `SUBGENRES
 ## Add a theme
 
 A theme is a `[data-theme="name"]` block of CSS variables in `src/app/globals.css` plus entries in `src/lib/theme/themes.ts`. Check contrast: text 4.5:1, large text and UI parts 3:1.
+
+## Add a language
+
+Copy `src/lib/i18n/es.ts` to a new file, translate the values, register it in `dict.ts` (`Lang`, `LANGS`, `dicts`) and add a blurb per theme in `src/lib/theme/themes.ts`.
 
 ## Bugs
 

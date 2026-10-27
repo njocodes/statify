@@ -4,9 +4,9 @@
 
 # Statify
 
-**Your Spotify listening history, drawn in the style of your music.**
+**Your Spotify listening history, explored in your browser. Nothing is uploaded.**
 
-[statify.njo.quest](https://statify.njo.quest) · [Report a bug](https://github.com/njocodes/statify/issues) · MIT licensed
+[statify.njo.quest](https://statify.njo.quest) · [Report a bug](https://github.com/njocodes/statify/issues) · [Security](SECURITY.md) · MIT licensed
 
 </div>
 
@@ -53,7 +53,7 @@ Stack: Next.js (App Router, static export), TypeScript, Tailwind CSS 4, Recharts
 | `src/lib/stats` | pure aggregation functions |
 | `src/lib/worker` | the Web Worker that owns the data |
 | `src/lib/theme` | genres, themes, cover colour |
-| `public/sw.js` | offline service worker |
+| `scripts/` | offline service worker template and generator (`public/sw.js` is generated at build) |
 
 To test with your own data, put the export in `Spotify Extended Streaming History/` (git-ignored). **Never commit listening data.**
 
