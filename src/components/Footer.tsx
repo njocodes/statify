@@ -1,5 +1,6 @@
 "use client";
 import { Mascot } from "./Mascot";
+import Link from "next/link";
 import { useStatify } from "@/lib/store/StatifyProvider";
 
 export function Footer() {
@@ -14,7 +15,7 @@ export function Footer() {
         <a href="https://github.com/njocodes/statify" target="_blank" rel="noopener noreferrer" className="underline underline-offset-2">
           {t("footerSource")}
         </a>{" "}
-        · MIT
+        · MIT · <Link href="/privacy/" className="underline underline-offset-2">{t("legalPrivacy")}</Link> · <Link href="/imprint/" className="underline underline-offset-2">{t("legalImprint")}</Link>
       </p>
     </footer>
   );

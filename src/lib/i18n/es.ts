@@ -202,6 +202,8 @@ export const es: Record<Key, string> = {
   errBody: "Statify no pudo iniciar sus cálculos. Recargar suele solucionarlo; tus datos en este dispositivo no se tocan.",
   errReload: "Recargar",
   footerDisclaimer: "Statify es un proyecto independiente y no está afiliado, respaldado ni patrocinado por Spotify. Tus archivos nunca salen de tu dispositivo.",
+  legalPrivacy: "Privacidad",
+  legalImprint: "Aviso legal",
   footerSource: "Código fuente en GitHub",
   bkTitle: "Copia de seguridad",
   bkSub: "Tus datos solo viven en este navegador. Guárdalos en un archivo para tener una copia o pasarlos a otro dispositivo: sube ese archivo en la página de inicio como cualquier otro.",
